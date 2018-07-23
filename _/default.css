@@ -1,0 +1,41 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.page {
+  width: 100%;
+  min-width: 350px;
+}
+
+.spaced   { padding: 10px; }
+.bspaced  { padding: 20px; }
+.sspaced  { padding: 5px; }
+.mspaced  { padding: 2px; }
+.hspaced  { padding: 0 10px; }
+.bhspaced { padding: 0 20px; }
+.shspaced { padding: 0 5px; }
+.mhspaced { padding: 0 2px; }
+.vspaced  { padding: 10px 0; }
+.bvspaced  { padding: 20px 0; }
+.svspaced  { padding: 5px 0; }
+.mvspaced  { padding: 2px 0; }
+
+.centered {
+  text-align: center;
+}
+.unvisible {
+  visibility: hidden;
+}
+.unvisible.visible {
+  visibility: visible;
+}
+.openable {
+  height: 0;
+  overflow: hidden;
+  transition: height .5s;
+}
+.openable.opened {
+  height: auto;
+  min-height: 0;
+}
