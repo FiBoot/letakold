@@ -1,63 +1,106 @@
 <?php
-include "include.php";
+include_once 'json.php';
+include_once 'sql.class.php';
+include_once 'data.class.php';
+include_once 'response.class.php';
 
-if ($post) {
+class Ajax {
 
-  switch ($post->action)
-  {
-    case "GET":
-      $json['status'] = true;
-      $json['message'] = 'oui '.$post->type;
-    break;
+  private $table = "fiboot_global";
 
-    case "LIST":
-      $json['status'] = false;
-      $json['message'] = 'non '.$post->type;
-    break;
+  private $sql;
+  private $rep;
 
-    case "SAVE":
-    break;
 
-    case "DELETE":
-    break;
+	function __construct() {
+    $input = file_get_contents("php://input");
+    $post = json_decode($input);
+
+    $this->sql = new Sql;
+    $this->rep = new Response;
+
+    if ($post) {
+      $this->rep->set_request($post->action, $post->type);
+      $this->exec($post);
+    }
   }
 
-  /* SENDING RESPONSE */
 
-  $sql->close();
+  function exec($post) {
 
-  $json["sql"]["query_count"]    = $sql->query_count();
-  $json["sql"]["elapsed_time"]   = $sql->get_elapsed_time();
+    $data = $post->data;
 
-  header('Content-Type: application/json');
-  echo json_encode($json);
+    // PROCESS POST
+    switch ($post->action) {
 
-  exit;
+      case "get":
+        $data_keys = array_keys((array)$data);
+        $result = $this->get($post->type, $data_keys[0], $data->id);
+
+        if ($result) {
+          $this->rep->data = new Data($arr);
+          $this->rep->ok();
+        } else {
+          $this->rep->nok("La récupération de $post->type a échoué");
+        }
+      break;
+
+      case "list":
+      break;
+
+      case "add":
+      array_keys($data);
+      break;
+
+      case "save":
+        $count = 50000000;
+        while ($count > 0) {
+          $count -= 1;
+        }
+        $this->rep->ok("save ok");
+      break;
+
+      case 'update':
+      break;
+
+      case "delete":
+        $this->rep->nok("del nok");
+      break;
+
+      default:
+        $this->rep->nok("Aucune action");
+    }
+
+    // SEND REPSONSE
+    $this->sql->close();
+    $this->send();
+  }
+
+  function send() {
+    $this->rep->query_count = $this->sql->query_count();
+    $this->rep->elapsed_time = $this->sql->get_elapsed_time();
+
+    header('Content-Type: application/json');
+    echo json_encode($this->rep);
+  }
+
+
+  function get($type, $field, $value) {
+    $field = $field && count($field) > 0 ? $field : "id";
+    $query = "SELECT * FROM `$this->table` WHERE `type`=". $this->sql->protect($type)
+           ." AND `$field`=". $this->sql->protect($value) .";";
+    $res = $this->sql->query($query);
+
+    if ($this->sql->row_number($res) === 1) {
+      $arr = $this->sql->fetch_array($res);
+      return new Data($arr);
+    }
+    return null;
+  }
+
 }
 
-
-/* MAIL FUNCTIONS */
-
-function send_activation_mail($email, $key)
-{
-  $to = $email;
-  $subject = "Activation de votre compte Letakol";
-  $message = "<table><tr><td>Bienvenue sur Letakol/FiBoot :)</td></tr><tr><td>Voici votre lien d'activaiton:</td><td><a href='http://letakol.free.fr/fiboot/#/account/new/$key'>Activer mon compte</a></td></tr></table>";
-  $headers  = "MIME-Version: 1.0"."\r\n";
-  $headers .= "Content-type: text/html; charset=iso-8859-1"."\r\n";
-
-  return mail($to, $subject, $message, $headers);
-}
-
-function send_newpassword_mail($email, $key)
-{
-  $to = $email;
-  $subject = "Recuperation de votre mot de passe Letakol";
-  $message = "<table><tr><td>Requête de récupération de mot de passe</td></tr><tr><td>Voici votre lien de génération d'un nouveau mot de passe: </td><td><a href='http://letakol.free.fr/fiboot/#/account/newpassword/$key'>Nouveau mot de passe</a></td></tr></table>";
-  $headers  = "MIME-Version: 1.0"."\r\n";
-  $headers .= "Content-type: text/html; charset=iso-8859-1"."\r\n";
-
-  return mail($to, $subject, $message, $headers);
-}
+new Ajax;
+exit;
 
 ?>

@@ -1,8 +1,11 @@
-angular.module("App").controller("mainCtrl", [
-  "$scope",
-  "$rootScope",
+angular.module('App').controller('mainCtrl', [
+  '$scope',
+  '$rootScope',
   function($scope, $rootScope) {
-    console.log(1);
+    $rootScope.apply = function apply() {
+      if (!$scope.$root.$$phase) {
+        $scope.$apply();
+      }
+    };
   }
 ]);
-

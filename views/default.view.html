@@ -1,3 +1,18 @@
-default view
 
-<button type="submit">send</button>
+
+<ajax-message info="info"></ajax-message>
+
+<form ng-submit="submit()">
+
+  <select class="form-control" ng-model="D.action">
+    <option ng-repeat="action in actions" value="{{action}}">{{action}}</option>
+  </select>
+  <input type="text" ng-model="D.type" placeholder="type">
+  <input type="text" ng-model="D.field" placeholder="field">
+  <input type="text" ng-model="D.value" placeholder="value">
+  <ajax-btn info="info" value="value" on-click="submit()"></ajax-btn>
+
+  <div>{{data}}</div>
+
+</form>
+

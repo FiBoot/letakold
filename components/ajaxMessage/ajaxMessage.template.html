@@ -1,0 +1,8 @@
+<div class="alert"
+  ng-show="$ctrl.info.message"
+  ng-class="{
+    'alert-warning': $ctrl.info.pending,
+    'alert-danger': !$ctrl.info.pending && !$ctrl.info.status,
+    'alert-success': !$ctrl.info.pending && $ctrl.info.status,
+  }">{{$ctrl.info.message}}
+</div>

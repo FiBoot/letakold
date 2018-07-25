@@ -7,6 +7,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<title>Letakol/FiBoot</title>
 	<!-- <link rel="icon" type="image/png" href="ressources/images/icon.png" /> -->
+	<link rel="stylesheet" href="_/default.css">
+	<link rel="stylesheet" href="_/bootstrap/bootstrap.min.css">
 </head>
 
 <body ng-controller="mainCtrl">
@@ -16,18 +18,22 @@
 	<!-- VIEW -->
 	<div ng-view></div>
 
+	<!-- SCRIPTS -->
+	<!-- lib -->
 	<script type="text/javascript" src="_/angular/angular.min.js"></script>
 	<script type="text/javascript" src="_/angular/angular-route.min.js"></script>
 	<script type="text/javascript" src="_/jquery/jquery.min.js"></script>
-
+	<!-- main controllers -->
 	<script type="text/javascript" src="controllers/route.js"></script>
 	<script type="text/javascript" src="controllers/main.controller.js"></script>
-
-	<script type="text/javascript" src="services/ajax.service.js"></script>
-
+	<!-- controllers -->
 	<script type="text/javascript" src="controllers/default.controller.js"></script>
 	<script type="text/javascript" src="controllers/list.controller.js"></script>
-
+	<!-- services -->
+	<script type="text/javascript" src="services/ajax.service.js"></script>
+	<!-- components -->
+	<script type="text/javascript" src="components/ajaxBtn/ajaxBtn.component.js"></script>
+	<script type="text/javascript" src="components/ajaxMessage/ajaxMessage.component.js"></script>
 
 </body>
 
