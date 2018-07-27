@@ -24,15 +24,19 @@ class Response {
     $this->request = "$action $type";
   }
 
-  function ok($msg = null) {
-    $this->status = true;
-    $this->message = $msg;
+  function update($status, $message) {
+    $this->status = $status;
+    $this->message = $message;
   }
 
-  function nok($msg = null) {
-    $this->status = false;
-    $this->message = $msg;
+  function ok($message = null) {
+    $this->update(true, $message);
   }
+
+  function nok($message = null) {
+    $this->update(false, $message);
+  }
+
 
 }
 
