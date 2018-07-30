@@ -3,21 +3,20 @@ angular.module('App').controller('defaultCtrl', [
   '$rootScope',
   'ajaxService',
   function($scope, $rootScope, ajaxService) {
-    $scope.actions = ['get', 'list', 'add', 'save', 'update', 'delete'];
+    $scope.actions = ['get', 'list', 'add', 'save', 'update', 'delete', 'connect', 'disconnect'];
     $scope.D = {
       action: $scope.actions[0],
       type: '',
       field: '',
-      value: ''
+      value: '',
+      force: false
     };
     $scope.data = null;
     $scope.info = new AjaxInfo();
 
     $scope.submit = function submit() {
       const D = $scope.D;
-      let data = {};
-      data[D.field] = D.value;
-      ajaxService.internalAjax(D.action, D.type, D.field ? data : null, $scope.info, response => {
+      ajaxService.internalAjax(D.action, D.type, D, $scope.info, response => {
         $scope.data = response.data;
         $rootScope.apply();
       });

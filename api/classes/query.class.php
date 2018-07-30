@@ -1,98 +1,5 @@
 <?php
 
-class Query {
-
-  const TABLE = "fiboot_global";
-
-  public $type;
-  private $params;
-  private $order;
-  public $limit;
-
-  private $keys;
-  private $values;
-
-
-	function __construct($command = EQueryCommand::SELECT, $type = null) {
-    $this->command = $command;
-    $this->type = $type;
-    $this->params = array();
-  }
-
-  function addParam($param) {
-    array_push($this->params, $param);
-  }
-
-  function setOrder($by, $order = EQueryOrder::DESC) {
-    $this->order = "ORDER BY $field $order";
-  }
-
-  function insert($keys, $values) {
-    $this->keys = $keys;
-    $this->values = $values;
-  }
-
-  function exec() {
-
-    if ($this->type) {
-      $this->addParam(new QueryParam('type', EComparator::EQUAL, $this->type));
-    }
-
-    switch ($this->command) {
-
-      case EQueryCommand::SELECT:
-        $first = true;
-        $queryParams = "";
-        foreach ($this->params as $param) {
-          $queryParams .= ($first ? "": " AND ") . $param->get();
-          $first = false;
-        }
-        $query = "SELECT * FROM `". self::TABLE ."`";
-        $query .= ($queryParams ? " WHERE " : "") . $queryParams;
-      break;
-
-      case EQueryCommand::INSERT_INTO:
-        $queryKeys = "";
-        $first = true;
-        foreach ($this->keys as $key) {
-          $queryKeys .= ($first ? "" : ", ") ."`$key`";
-          $first = false;
-        }
-        $queryValues = "";
-        $first = true;
-        foreach ($this->values as $value) {
-          $queryValues .= ($first ? "" : ", ") . "'". addslashes($value) ."'";
-          $first = false;
-        }
-        $query = "INSERT INTO `". self::TABLE ."` ($queryKeys) VALUES ($queryValues)";
-      break;
-
-      case EQueryCommand::UPDATE:
-      break;
-
-      case EQueryCommand::DELETE:
-      break;
-
-      default:
-        $query = null;
-    }
-
-    return Sql::query("$query;");
-  }
-
-}
-
-
-class QueryParam {
-  private $param;
-  function __construct($field, $comparator, $value) {
-    $this->param = "`$field` $comparator '". addslashes($value) ."'";
-  }
-  function get() {
-    return $this->param;
-  }
-}
-
 abstract class EQueryOrder {
   const ASC = "ASC";
   const DESC = "DESC";
@@ -113,6 +20,144 @@ abstract class EComparator {
   const LESS = "<=";
   const DIFFERENT = "<>";
   const LIKE = "LIKE";
+}
+
+class QueryParam {
+  public $key;
+  private $param;
+
+  function __construct($key, $comparator, $value) {
+    $this->key = $key;
+    $this->param = "`$key` $comparator '". addslashes($value) ."'";
+  }
+
+  function or_query($query_param) {
+    $new_param = $query_param->get();
+    $this->param = "($this->param OR $new_param)";
+  }
+  function get() {
+    return $this->param;
+  }
+}
+
+
+class Query {
+
+  const TABLE = "fiboot_global";
+
+  private $type;
+  private $params;
+  private $key_values;
+  private $order;
+  private $limit;
+
+
+	function __construct($command = EQueryCommand::SELECT, $type = null) {
+    $this->command = $command;
+    $this->type = $type;
+    $this->params = array();
+    $this->key_values = array();
+    $this->order = "";
+    $this->limit = "";
+  }
+
+
+  public function add_param($param) {
+    array_push($this->params, $param);
+  }
+
+  public function set_order($field, $order = EQueryOrder::DESC) {
+    $this->order = "ORDER BY `$field` $order";
+  }
+
+  public function set_limit($limit) {
+    $this->limit = "LIMIT $limit";
+  }
+
+  public function add_keyvalue($key, $value) {
+    $key_value = array(
+      "key" => $key,
+      "value" => $value
+    );
+    array_push($this->key_values, $key_value);
+  }
+
+
+  private function get_query_params() {
+    $params_query = "";
+    foreach ($this->params as $key => $value) {
+      $params_query .= ($key > 0 ? " AND " : "") . $value->get();
+    }
+    return $params_query;
+  }
+
+  private function add_public_param($force) {
+    if (!$force) {
+      $public_param = new QueryParam('public', EComparator::EQUAL, 1);
+      $user = USER::get();
+      if ($user) {
+        $user_param = new QueryParam('account_id', EComparator::EQUAL, $user->id);
+        $public_param->or_query($user_param);
+      }
+      $this->add_param($public_param);
+    }
+  }
+
+
+  public function exec($force = false) {
+    if ($this->type) {
+      $this->add_param(new QueryParam('type', EComparator::EQUAL, $this->type));
+    }
+
+    $user = USER::get();
+    $query = null;
+
+    switch ($this->command) {
+
+      case EQueryCommand::SELECT:
+        $this->add_public_param($force);
+        $query_params = $this->get_query_params();
+        $query = "SELECT * FROM `". self::TABLE ."` WHERE $query_params $this->order $this->limit";
+      break;
+
+      case EQueryCommand::INSERT_INTO:
+        if ($user) {
+          $this->add_keyvalue("account_id", $user->id);
+          $query_keys = "";
+          $query_values = "";
+          foreach ($this->key_values as $key => $value) {
+            $query_keys .= ($key > 0 ? ", " : "") . "`$key`";
+            $query_values .= ($key > 0 ? ", " : "") . "'". addslashes($value) ."'";
+          }
+          $query = "INSERT INTO `". self::TABLE ."` ($query_keys) VALUES ($query_values)";
+        } else {
+          // TODO: rep
+        }
+      break;
+
+      case EQueryCommand::UPDATE:
+        if ($user && count($this->params) > 0) {
+          $this->add_param(new QueryParam('account_id', EComparator::EQUAL, $user->id));
+          $query_params = $this->get_query_params();
+          $query_keyvalues = "";
+          foreach ($this->key_values as $key => $value) {
+            $qp = new QueryParam($this->key_values[$key], EComparator::EQUAL, $value);
+            $query_keyvalues .= ($key > 0 ? ", " : "") . $qp->get();
+          }
+          $query = "UPDATE `". self::TABLE ."` SET $query_keyvalues WHERE $query_params";
+        }
+      break;
+
+      case EQueryCommand::DELETE:
+        $this->add_public_param($force);
+        $query_params = $this->get_query_params();
+        $query = "DELETE FROM `". self::TABLE ."` WHERE $query_params";
+      break;
+    }
+
+    return SQL::query("$query;");
+  }
+
 }
 
 ?>

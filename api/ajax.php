@@ -14,8 +14,7 @@ class Ajax {
     $input = file_get_contents("php://input");
     $post = json_decode($input);
 
-    Sql::start();
-    User::find();
+    SQL::start();
     $this->rep = new Response;
 
     if ($post) {
@@ -32,65 +31,75 @@ class Ajax {
     // PROCESS POST
     switch ($post->action) {
 
-      case "connect":
-        if ($post->type.strchr("account") && $data->username && $data->password) {
-
-        }
-      break;
-
-      case "disconnect":
-        $this->user->disconnect();
-      break;
-
       case "get":
-        $data_keys = array_keys((array)$data);
-        $result = $this->query_get($post->type, $data_keys[0], $data->id);
-
-        if ($result) {
-          $this->rep->data = $result;
-          $this->rep->ok();
+        $query = new Query(EQueryCommand::SELECT, $post->type);
+        if ($data->field && $data->value) {
+          $query->add_param(new QueryParam($data->field, EComparator::EQUAL, $data->value));
+        }
+        $res = $query->exec($data->force);
+        $res_count = SQL::row_number($res);
+        if ($res_count === 1) {
+          $this->rep->data = SQL::fetch_assoc($res);
+          $queries=SQL::get_queries();
+          $this->rep->ok($queries[0]);
         } else {
-          $this->rep->nok("La récupération de $post->type a échoué");
+          $this->rep->nok($res_count ? "More than 1 result found" : "No result found");
         }
       break;
 
       case "list":
         $query = new Query(EQueryCommand::SELECT, $post->type);
-        $query->setOrder("id", EQueryOrder::ASC);
-
-        $res = $query->exec();
-        $this->rep->data = Sql::assoc_tab($res);
-        $this->rep->ok('ok');
-
-        // $results = $this->query_list($post->type);
-        // if ($results) {
-        //   $this->rep->data = $results;
-        //   $this->rep->ok();
-        // } else {
-        //   $this->rep->nok("La récupération de list $post->type a échoué");
-        // }
+        $query->set_order("creation_date");
+        $res = $query->exec($data->force);
+        $this->rep->data = SQL::assoc_tab($res);
+        $queries=SQL::get_queries();
+        $this->rep->ok($queries[0]);
       break;
 
-      case "add":
-        $_SESSION['connected'] = true;
-        $_SESSION['id'] = intval($post->type);
-        $this->rep->ok("ok");
+
+
+      case 'new':
+        $user = USER::get();
+        $this->rep->data = $user;
+        $this->rep->update($user ? true : false, 'user');
       break;
+
+
 
       case "save":
-        // $this->db_import();
-        $results = $this->query_list(null, false, " ORDER BY `creation_date` DESC limit 10");
-        $this->rep->data = $results;
-        $this->rep->ok();
+        if (!$data->field || !$data->value) {
+          $this->rep->nok('n');
+        } else {
+          $query = new Query(EQueryCommand::SELECT);
+          $query->add_param(new QueryParam($data->field, EComparator::EQUAL, $data->value));
+          $res = $query->exec(true);
+          $arr = new Data(SQL::fetch_assoc($res));
+          $keys = array_keys((array)$arr->data);
+          $str_data = "{";
+          foreach ($arr->data as $key => $value) {
+            $str_data .= "\"$key\": \"$value\", ";
+          }
+          $str_data[strlen($str_data) - 1] = '}';
+          $this->rep->data = $str_data;
+          $this->rep->ok();
+        }
       break;
 
-      case 'update':
-        $this->rep->update($_SESSION['connected'] ? true : false, "id : ". ($_SESSION['connected'] ? $_SESSION['id'] : 0));
-      break;
+
 
       case "delete":
-        session_destroy();
-        $this->rep->ok("ok");
+      break;
+
+
+
+      case "connect":
+        $res = USER::connect($data->field, md5($data->value));
+        $msg = $res ? "Connection réussie" : "Nom d'utilisateur ou mot de passe incorrect";
+        $this->rep->update($res, $msg);
+      break;
+
+      case "disconnect":
+        USER::disconnect();
       break;
 
       default:
@@ -98,13 +107,13 @@ class Ajax {
     }
 
     // SEND REPSONSE
-    Sql::close();
+    SQL::close();
     $this->send();
   }
 
   function send() {
-    $this->rep->query_count = Sql::query_count();
-    $this->rep->elapsed_time = Sql::get_elapsed_time();
+    $this->rep->query_count = SQL::query_count();
+    $this->rep->elapsed_time = SQL::get_elapsed_time();
 
     header('Content-Type: application/json');
     echo json_encode($this->rep);
@@ -112,46 +121,19 @@ class Ajax {
 
 
   /* -----------------
-  *    SQL ACTIONS
-  ----------------- */
-
-  function query_get($type, $option = null) {
-    $query = $this->start_query($type, false, $option);
-    $res = Sql::query($query);
-
-    if (Sql::row_number($res) === 1) {
-      $arr = Sql::fetch_array($res);
-      return new Data($arr);
-    }
-    return null;
-  }
-
-  function query_list($type, $force = false, $option = null) {
-    $query = $this->start_query($type, $force, $option);
-    $res = Sql::query($query);
-
-    $results = array();
-    while ($arr = Sql::fetch_array($res)) {
-      $results[] = new Data($arr);
-    }
-    return $results;
-  }
-
-
-  /* -----------------
-  *       TMPS
+  *    SQL IMPORT
   ----------------- */
 
   function db_import() {
-    $res = Sql::query("SELECT * FROM `fiboot_timeline`");
-    while ($row = Sql::fetch_array($res)) {
+    $res = SQL::query("SELECT * FROM `fiboot_timeline`");
+    while ($row = SQL::fetch_array($res)) {
       $data = '{date_start: "'.$row['start'].'"';
       $data .= ', date_end: "'.$row['end'].'"';
       $data .= "}";
       $query = "INSERT INTO `". self::TABLE ."` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `public`) VALUES ('".(1000 + intval($row['id']))."', '".$row['account_id']."', '".addslashes($row['content'])."', '".$data."', 'timeline_event', '".$row['date_created']."', '".$row['public']."')";
-      Sql::query($query);
+      SQL::query($query);
     }
-    $this->rep->data = Sql::get_queries();
+    $this->rep->data = SQL::get_queries();
     $this->rep->ok();
   }
 }

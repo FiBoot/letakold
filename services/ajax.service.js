@@ -1,21 +1,16 @@
-class AjaxInfo {
-  constructor() {
-    this.pending = false;
-    this.message = '';
-    this.status = null;
+function buildData(response) {
+  if (response.data) {
+    if (response.data instanceof Array) {
+      const arr = [];
+      response.data.forEach(row => {
+        arr.push(new Data(row));
+      });
+      response.data = arr;
+    } else {
+      response.data = new Data(response.data);
+    }
   }
-
-  update(pending, message, status) {
-    this.status = status;
-    this.message = message;
-    this.pending = pending;
-  }
-  ok(message) {
-    this.update(false, message, true);
-  }
-  nok(message) {
-    this.update(false, message, false);
-  }
+  return response;
 }
 
 function ajaxService($rootScope) {
@@ -29,10 +24,12 @@ function ajaxService($rootScope) {
         data: JSON.stringify(data)
       });
 
-      jqxhr.done((data, textStatus, jqXHR) => {
-        info.update(false, data.message, data.status);
+      jqxhr.done((response, textStatus, jqXHR) => {
+        info.update(false, response.message, response.status);
         $rootScope.apply();
         if (successCallback) {
+          let data = buildData(response);
+          console.warn(response, data);
           successCallback(data);
         }
       });

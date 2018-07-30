@@ -1,23 +1,14 @@
 <?php
 
-class Sql {
+class SQL {
 
 	private static $link;
-	private static $query_number;
 	private static $queries;
 
 	private static $start_time;
 
-	// function __construct() {
-	// 	this->bdd_connect();
-	// 	this->query_number	= 0;
-	// 	this->queries = array();
-	// }
-
-	// function bdd_connect() {
 	public static function start() {
 		if (!self::$link) {
-			self::$query_number = 0;
 			self::$queries = array();
 			self::$start_time = microtime(true);
 			self::$link	= mysql_connect("localhost", "letakol", "283669");
@@ -36,18 +27,14 @@ class Sql {
 			die("Sql error within: <span style='color:#555;'>$req</span><br /><span style='color:#C00;'>$error</span>");
 		}
 
-		self::$query_number	+= 1;
 		array_push(self::$queries, $req);
 
 		return $result;
 	}
 
-	public static function fetch_array($res) {
-		return mysql_fetch_array($res);
-	}
-
-	public static function assoc_row($res) {
+	public static function fetch_assoc($res) {
 		return mysql_fetch_assoc($res);
+		// return new Data(mysql_fetch_assoc($res));
 	}
 
 	public static function row_number($res) {
@@ -60,14 +47,14 @@ class Sql {
 
 	public static function assoc_tab($res) {
 		$tab = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = self::fetch_assoc($res)) {
 			$tab[] = $row;
 		}
 		return $tab;
 	}
 
 	public static function query_count() {
-		return self::$query_number;
+		return count(self::$queries);
 	}
 
 	public static function get_queries() {

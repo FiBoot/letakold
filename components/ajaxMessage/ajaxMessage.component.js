@@ -5,12 +5,10 @@ function ajaxMessageController($scope, $element, $attrs) {
   this.$onInit = function onInit() {};
   this.$onChanges = function onChanges(changesObj) {
     ctrl.display = true;
-    console.warn(ctrl.display);
   };
 
   ctrl.click = function click() {
     ctrl.display = false;
-    console.warn(ctrl.display);
   };
 }
 
