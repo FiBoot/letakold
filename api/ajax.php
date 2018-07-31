@@ -69,6 +69,16 @@ class Ajax {
 
 
       case "delete":
+        $query = new Query(EQueryCommand::DELETE, 'test');
+        $query->add_param('id', EComparator::EQUAL, $data->value);
+        $res = $query->exec($data->force);
+        if ($res) {
+          $queries = SQL::get_queries();
+          $this->rep->data = $res;
+          $this->rep->ok($queries[0]);
+        } else {
+          $this->rep->nok('no user');
+        }
       break;
 
 

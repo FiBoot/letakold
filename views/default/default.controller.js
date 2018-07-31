@@ -3,7 +3,7 @@ angular.module('App').controller('defaultCtrl', [
   '$rootScope',
   'ajaxService',
   function($scope, $rootScope, ajaxService) {
-    $scope.actions = ['get', 'list', 'add', 'save', 'update', 'delete', 'connect', 'disconnect'];
+    $scope.actions = ['get', 'list', 'new', 'save', 'update', 'delete', 'connect', 'disconnect'];
     $scope.D = {
       action: $scope.actions[0],
       type: '',

@@ -7,6 +7,7 @@ class DataRow {
     this.data =
       this.type === 'dnd_sheet' ? { sheet: json.data.slice(10, json.data.length - 1) } : JSON.parse(json.data);
     this.creation_date = json.creation_date ? new Date(json.creation_date) : new Date();
+    this.last_update = json.last_update ? new Date(json.last_update) : new Date();
     this.public = json.public ? json.public : false;
   }
 }

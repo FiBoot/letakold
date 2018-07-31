@@ -76,13 +76,13 @@ class Query {
     array_push($this->params, $param);
   }
 
+  public function add_query_param($query_param) {
+    array_push($this->params, $query_param);
+  }
+
   public function add_keyvalue($key, $value) {
     $keyvalue = new KeyValue($key, $value);
     array_push($this->keyvalues, $keyvalue);
-  }
-
-  public function add_query_param($query_param) {
-    array_push($this->params, $query_param);
   }
 
   public function set_order($field, $order = EQueryOrder::ASC) {
@@ -144,12 +144,12 @@ class Query {
           }
           $query = "INSERT INTO `". self::TABLE ."` ($query_keys) VALUES ($query_values)";
         } else {
-          // TODO: rep
+          return null;
         }
       break;
 
       case EQueryCommand::UPDATE:
-        if ($user && count($this->params) > 0) {
+        if ($user) {
           // $this->add_param("account_id", EComparator::EQUAL, $user->id);
           $query_params = $this->get_query_params();
           $query_keyvalues = "";
@@ -158,14 +158,19 @@ class Query {
             $query_keyvalues .= ($key > 0 ? ", " : "") . $qp->get();
           }
           $query = "UPDATE `". self::TABLE ."` SET $query_keyvalues WHERE $query_params";
+        } else {
+          return null;
         }
-        return $query;
       break;
 
       case EQueryCommand::DELETE:
-        $this->add_public_param($force);
-        $query_params = $this->get_query_params();
-        $query = "DELETE FROM `". self::TABLE ."` WHERE $query_params";
+        if ($user) {
+          $this->add_param("account_id", EComparator::EQUAL, $user->id);
+          $query_params = $this->get_query_params();
+          $query = "DELETE FROM `". self::TABLE ."` WHERE $query_params";
+        } else {
+          return null;
+        }
       break;
     }
 
