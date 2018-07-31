@@ -17,6 +17,7 @@ angular.module('App').controller('defaultCtrl', [
     $scope.submit = function submit() {
       const D = $scope.D;
       ajaxService.internalAjax(D.action, D.type, D, $scope.info, response => {
+        console.log(response.data);
         $scope.data = response.data;
         $rootScope.apply();
       });

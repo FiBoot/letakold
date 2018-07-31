@@ -1,13 +1,13 @@
-function buildData(response) {
+function buildDataRow(response) {
   if (response.data) {
     if (response.data instanceof Array) {
       const arr = [];
       response.data.forEach(row => {
-        arr.push(new Data(row));
+        arr.push(new DataRow(row));
       });
       response.data = arr;
     } else {
-      response.data = new Data(response.data);
+      response.data = new DataRow(response.data);
     }
   }
   return response;
@@ -28,9 +28,8 @@ function ajaxService($rootScope) {
         info.update(false, response.message, response.status);
         $rootScope.apply();
         if (successCallback) {
-          let data = buildData(response);
-          console.warn(response, data);
-          successCallback(data);
+          const dataRow = buildDataRow(response);
+          successCallback(dataRow);
         }
       });
       jqxhr.fail((jqXHR, textStatus, errorThrown) => {
@@ -45,6 +44,7 @@ function ajaxService($rootScope) {
 
     internalAjax: function internalAjax(action, type, data, info = new AjaxInfo(), successCallback, errorCallback) {
       info.update(true, `${action} ${type} ...`);
+      $rootScope.apply();
       this.ajax(
         'api/ajax.php',
         'POST',

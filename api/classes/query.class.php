@@ -26,7 +26,7 @@ class QueryParam {
   public $key;
   private $param;
 
-  function __construct($key, $comparator, $value) {
+  function __construct($key, $comparator = EComparator::EQUAL, $value) {
     $this->key = $key;
     $this->param = "`$key` $comparator '". addslashes($value) ."'";
   }
@@ -40,6 +40,15 @@ class QueryParam {
   }
 }
 
+class KeyValue {
+  public $key;
+  public $value;
+  function __construct($key, $value) {
+    $this->key = $key;
+    $this->value = $value;
+  }
+}
+
 
 class Query {
 
@@ -47,7 +56,7 @@ class Query {
 
   private $type;
   private $params;
-  private $key_values;
+  private $keyvalues;
   private $order;
   private $limit;
 
@@ -56,30 +65,32 @@ class Query {
     $this->command = $command;
     $this->type = $type;
     $this->params = array();
-    $this->key_values = array();
+    $this->keyvalues = array();
     $this->order = "";
     $this->limit = "";
   }
 
 
-  public function add_param($param) {
+  public function add_param($field, $comparator, $value) {
+    $param = new QueryParam($field, $comparator, $value);
     array_push($this->params, $param);
   }
 
-  public function set_order($field, $order = EQueryOrder::DESC) {
+  public function add_keyvalue($key, $value) {
+    $keyvalue = new KeyValue($key, $value);
+    array_push($this->keyvalues, $keyvalue);
+  }
+
+  public function add_query_param($query_param) {
+    array_push($this->params, $query_param);
+  }
+
+  public function set_order($field, $order = EQueryOrder::ASC) {
     $this->order = "ORDER BY `$field` $order";
   }
 
   public function set_limit($limit) {
     $this->limit = "LIMIT $limit";
-  }
-
-  public function add_keyvalue($key, $value) {
-    $key_value = array(
-      "key" => $key,
-      "value" => $value
-    );
-    array_push($this->key_values, $key_value);
   }
 
 
@@ -99,14 +110,14 @@ class Query {
         $user_param = new QueryParam('account_id', EComparator::EQUAL, $user->id);
         $public_param->or_query($user_param);
       }
-      $this->add_param($public_param);
+      $this->add_query_param($public_param);
     }
   }
 
 
   public function exec($force = false) {
     if ($this->type) {
-      $this->add_param(new QueryParam('type', EComparator::EQUAL, $this->type));
+      $this->add_param('type', EComparator::EQUAL, $this->type);
     }
 
     $user = USER::get();
@@ -117,15 +128,17 @@ class Query {
       case EQueryCommand::SELECT:
         $this->add_public_param($force);
         $query_params = $this->get_query_params();
-        $query = "SELECT * FROM `". self::TABLE ."` WHERE $query_params $this->order $this->limit";
+        $query = "SELECT * FROM `". self::TABLE ."`";
+        $query .= ($query_params ? " WHERE $query_params" : "");
+        $query .= rtrim(" $this->order $this->limit");
       break;
 
       case EQueryCommand::INSERT_INTO:
         if ($user) {
-          $this->add_keyvalue("account_id", $user->id);
+          $this->add_param("account_id", EComparator::EQUAL, $user->id);
           $query_keys = "";
           $query_values = "";
-          foreach ($this->key_values as $key => $value) {
+          foreach ($this->keyvalues as $key => $value) {
             $query_keys .= ($key > 0 ? ", " : "") . "`$key`";
             $query_values .= ($key > 0 ? ", " : "") . "'". addslashes($value) ."'";
           }
@@ -137,15 +150,16 @@ class Query {
 
       case EQueryCommand::UPDATE:
         if ($user && count($this->params) > 0) {
-          $this->add_param(new QueryParam('account_id', EComparator::EQUAL, $user->id));
+          // $this->add_param("account_id", EComparator::EQUAL, $user->id);
           $query_params = $this->get_query_params();
           $query_keyvalues = "";
-          foreach ($this->key_values as $key => $value) {
-            $qp = new QueryParam($this->key_values[$key], EComparator::EQUAL, $value);
+          foreach ($this->keyvalues as $key => $value) {
+            $qp = new QueryParam($value->key, EComparator::EQUAL, $value->value);
             $query_keyvalues .= ($key > 0 ? ", " : "") . $qp->get();
           }
           $query = "UPDATE `". self::TABLE ."` SET $query_keyvalues WHERE $query_params";
         }
+        return $query;
       break;
 
       case EQueryCommand::DELETE:

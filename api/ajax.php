@@ -34,7 +34,7 @@ class Ajax {
       case "get":
         $query = new Query(EQueryCommand::SELECT, $post->type);
         if ($data->field && $data->value) {
-          $query->add_param(new QueryParam($data->field, EComparator::EQUAL, $data->value));
+          $query->add_param($data->field, EComparator::EQUAL, $data->value);
         }
         $res = $query->exec($data->force);
         $res_count = SQL::row_number($res);
@@ -49,13 +49,12 @@ class Ajax {
 
       case "list":
         $query = new Query(EQueryCommand::SELECT, $post->type);
-        $query->set_order("creation_date");
+        $query->set_order("id");
         $res = $query->exec($data->force);
         $this->rep->data = SQL::assoc_tab($res);
-        $queries=SQL::get_queries();
+        $queries = SQL::get_queries();
         $this->rep->ok($queries[0]);
       break;
-
 
 
       case 'new':
@@ -65,31 +64,12 @@ class Ajax {
       break;
 
 
-
       case "save":
-        if (!$data->field || !$data->value) {
-          $this->rep->nok('n');
-        } else {
-          $query = new Query(EQueryCommand::SELECT);
-          $query->add_param(new QueryParam($data->field, EComparator::EQUAL, $data->value));
-          $res = $query->exec(true);
-          $arr = new Data(SQL::fetch_assoc($res));
-          $keys = array_keys((array)$arr->data);
-          $str_data = "{";
-          foreach ($arr->data as $key => $value) {
-            $str_data .= "\"$key\": \"$value\", ";
-          }
-          $str_data[strlen($str_data) - 1] = '}';
-          $this->rep->data = $str_data;
-          $this->rep->ok();
-        }
       break;
-
 
 
       case "delete":
       break;
-
 
 
       case "connect":
@@ -120,20 +100,52 @@ class Ajax {
   }
 
 
+
+
   /* -----------------
   *    SQL IMPORT
   ----------------- */
 
+  function quote_data() {
+    $ignore_quotes = array("activated", "admin", "actif", "checked");
+
+    $query = new Query(EQueryCommand::SELECT, $post->type);
+    $query->set_order("id");
+    $res = $query->exec(true);
+
+    $reps = array();
+
+    while ($arr = SQL::fetch_assoc($res)) {
+      $row = new Data($arr);
+      $keys = array_keys((array)$row->data);
+
+      $str_data = "{";
+      $first = true;
+      foreach ($row->data as $key => $value) {
+        $str_data .= ($first ? "" : ", ") . "\"$key\": ". (in_array($key, $ignore_quotes) ? $value : "'".addslashes($value)."'");
+        $first = false;
+      }
+      $str_data .= "}";
+
+      $query = new Query(EQueryCommand::UPDATE);
+      $query->add_param('id', EComparator::EQUAL, $row->id);
+      $query->add_keyvalue("data", $str_data);
+      $reps[] = $query->exec();
+    }
+    $this->rep->data = $reps;
+    $this->rep->ok('ok');
+  }
+
   function db_import() {
-    $res = SQL::query("SELECT * FROM `fiboot_timeline`");
-    while ($row = SQL::fetch_array($res)) {
-      $data = '{date_start: "'.$row['start'].'"';
-      $data .= ', date_end: "'.$row['end'].'"';
+    $res = SQL::query("SELECT * FROM `fiboot_dndsheets` ORDER BY `id` ASC");
+    $query;
+    while ($row = SQL::fetch_assoc($res)) {
+      $data = '{"sheet": "'. addslashes($row['sheet']) .'"';
       $data .= "}";
-      $query = "INSERT INTO `". self::TABLE ."` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `public`) VALUES ('".(1000 + intval($row['id']))."', '".$row['account_id']."', '".addslashes($row['content'])."', '".$data."', 'timeline_event', '".$row['date_created']."', '".$row['public']."')";
+      $query = "INSERT INTO `". self::TABLE ."` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `public`) VALUES ('".$row['id']."', '".$row['account_id']."', '".addslashes($row['name'])."', '".$data."', 'dnd_sheet', '".$row['date_created']."', '".$row['public']."')";
       SQL::query($query);
     }
-    $this->rep->data = SQL::get_queries();
+    $this->rep->data = $query;
     $this->rep->ok();
   }
 }
