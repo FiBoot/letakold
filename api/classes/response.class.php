@@ -24,7 +24,7 @@ class Response {
     $this->request = "$action $type";
   }
 
-  function update($status, $message) {
+  function update($status, $message = null) {
     $this->status = $status;
     $this->message = $message;
   }

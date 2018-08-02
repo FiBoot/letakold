@@ -7,7 +7,7 @@ abstract class EQueryOrder {
 
 abstract class EQueryCommand {
   const SELECT = 0;
-  const INSERT_INTO = 1;
+  const INSERT = 1;
   const UPDATE = 2;
   const DELETE = 3;
 }
@@ -95,11 +95,11 @@ class Query {
 
 
   private function get_query_params() {
-    $params_query = "";
+    $pq = "";
     foreach ($this->params as $key => $value) {
-      $params_query .= ($key > 0 ? " AND " : "") . $value->get();
+      $pq .= ($key > 0 ? " AND " : "") . $value->get();
     }
-    return $params_query;
+    return (count($pq) > 0) ? $pq : "true";
   }
 
   private function add_public_param($force) {
@@ -112,6 +112,30 @@ class Query {
       }
       $this->add_query_param($public_param);
     }
+  }
+
+  private function add_private_param($force, $user) {
+    if (!$force && !$user->admin) {
+      $this->add_param("account_id", EComparator::EQUAL, $user->id);
+    }
+  }
+
+  private function build_insert_keyvalue() {
+    $qkv = (object)array("keys" => "", "values" => "");
+    foreach ($this->keyvalues as $key => $kv) {
+      $qkv->keys .= ($key > 0 ? ", " : "") . "`$kv->key`";
+      $qkv->values .= ($key > 0 ? ", " : "") . "'". addslashes($kv->value) ."'";
+    }
+    return $qkv;
+  }
+
+  private function build_update_keyvalue() {
+    $qkv = "";
+    foreach ($this->keyvalues as $key => $kv) {
+      $qp = new QueryParam($kv->key, EComparator::EQUAL, $kv->value);
+      $qkv .= ($key > 0 ? ", " : "") . $qp->get();
+    }
+    return $qkv;
   }
 
 
@@ -128,53 +152,36 @@ class Query {
       case EQueryCommand::SELECT:
         $this->add_public_param($force);
         $query_params = $this->get_query_params();
-        $query = "SELECT * FROM `". self::TABLE ."`";
-        $query .= ($query_params ? " WHERE $query_params" : "");
-        $query .= rtrim(" $this->order $this->limit");
+        $query = rtrim("SELECT * FROM `". self::TABLE ."` WHERE $query_params $this->order $this->limit");
       break;
 
-      case EQueryCommand::INSERT_INTO:
+      case EQueryCommand::INSERT:
         if ($user) {
-          $this->add_param("account_id", EComparator::EQUAL, $user->id);
-          $query_keys = "";
-          $query_values = "";
-          foreach ($this->keyvalues as $key => $value) {
-            $query_keys .= ($key > 0 ? ", " : "") . "`$key`";
-            $query_values .= ($key > 0 ? ", " : "") . "'". addslashes($value) ."'";
-          }
-          $query = "INSERT INTO `". self::TABLE ."` ($query_keys) VALUES ($query_values)";
-        } else {
-          return null;
+          $this->add_keyvalue('account_id', $user->id);
+          $qkv = $this->build_insert_keyvalue();
+          $query = "INSERT INTO `". self::TABLE ."` ($qkv->keys) VALUES ($qkv->values)";
         }
       break;
 
       case EQueryCommand::UPDATE:
         if ($user) {
-          // $this->add_param("account_id", EComparator::EQUAL, $user->id);
+          $this->add_private_param($force, $user);
           $query_params = $this->get_query_params();
-          $query_keyvalues = "";
-          foreach ($this->keyvalues as $key => $value) {
-            $qp = new QueryParam($value->key, EComparator::EQUAL, $value->value);
-            $query_keyvalues .= ($key > 0 ? ", " : "") . $qp->get();
-          }
-          $query = "UPDATE `". self::TABLE ."` SET $query_keyvalues WHERE $query_params";
-        } else {
-          return null;
+          $qkv = $this->build_update_keyvalue();
+          $query = "UPDATE `". self::TABLE ."` SET $qkv WHERE $query_params";
         }
       break;
 
       case EQueryCommand::DELETE:
         if ($user) {
-          $this->add_param("account_id", EComparator::EQUAL, $user->id);
+          $this->add_private_param($force, $user);
           $query_params = $this->get_query_params();
           $query = "DELETE FROM `". self::TABLE ."` WHERE $query_params";
-        } else {
-          return null;
         }
       break;
     }
 
-    return SQL::query("$query;");
+    return $query ? SQL::query("$query;") : null;
   }
 
 }

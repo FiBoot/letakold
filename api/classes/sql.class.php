@@ -41,8 +41,8 @@ class SQL {
 		return mysql_num_rows($res);
 	}
 
-	public static function affected_row($res) {
-		return mysql_affected_rows($res);
+	public static function affected_row() {
+		return mysql_affected_rows();
 	}
 
 	public static function assoc_tab($res) {

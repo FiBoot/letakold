@@ -9,7 +9,8 @@ angular.module('App').controller('defaultCtrl', [
       type: '',
       field: '',
       value: '',
-      force: false
+      force: false,
+      debug: false
     };
     $scope.data = null;
     $scope.info = new AjaxInfo();

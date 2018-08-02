@@ -14,7 +14,6 @@ class Ajax {
     $input = file_get_contents("php://input");
     $post = json_decode($input);
 
-    SQL::start();
     $this->rep = new Response;
 
     if ($post) {
@@ -26,70 +25,88 @@ class Ajax {
 
   function exec($post) {
 
+    SQL::start();
     $data = $post->data;
 
     // PROCESS POST
     switch ($post->action) {
 
       case "get":
-        $query = new Query(EQueryCommand::SELECT, $post->type);
-        if ($data->field && $data->value) {
-          $query->add_param($data->field, EComparator::EQUAL, $data->value);
-        }
-        $res = $query->exec($data->force);
-        $res_count = SQL::row_number($res);
-        if ($res_count === 1) {
-          $this->rep->data = SQL::fetch_assoc($res);
-          $queries=SQL::get_queries();
-          $this->rep->ok($queries[0]);
-        } else {
-          $this->rep->nok($res_count ? "More than 1 result found" : "No result found");
+        if ($data->id) {
+          $query = new Query(EQueryCommand::SELECT, $post->type);
+          $query->add_param('id', EComparator::EQUAL, $data->id);
+          $res = $query->exec($data->force);
+          $res_count = SQL::row_number($res);
+          if ($res_count === 1) {
+            $this->rep->data = SQL::fetch_assoc($res);
+            $this->rep->ok();
+          } else {
+            $this->rep->nok();
+          }
         }
       break;
 
       case "list":
         $query = new Query(EQueryCommand::SELECT, $post->type);
-        $query->set_order("id");
         $res = $query->exec($data->force);
         $this->rep->data = SQL::assoc_tab($res);
-        $queries = SQL::get_queries();
-        $this->rep->ok($queries[0]);
       break;
-
 
       case 'new':
-        $user = USER::get();
-        $this->rep->data = $user;
-        $this->rep->update($user ? true : false, 'user');
+        $query = new Query(EQueryCommand::INSERT);
+        $query->add_keyvalue('type', $post->type);
+        $query->add_keyvalue('name', $data->name);
+        $query->add_keyvalue('data', $data->value);
+        $query->add_keyvalue('public', $data->public);
+        $query->add_keyvalue('last_update', date('Y-m-d G:i:s'));
+        $res = $query->exec($data->force);
+        $this->rep->update($res ? true : false);
       break;
-
 
       case "save":
-      break;
-
-
-      case "delete":
-        $query = new Query(EQueryCommand::DELETE, 'test');
-        $query->add_param('id', EComparator::EQUAL, $data->value);
-        $res = $query->exec($data->force);
-        if ($res) {
-          $queries = SQL::get_queries();
-          $this->rep->data = $res;
-          $this->rep->ok($queries[0]);
-        } else {
-          $this->rep->nok('no user');
+        if ($data->id) {
+          $query = new Query(EQueryCommand::UPDATE, $post->type);
+          $query->add_param('id', EComparator::EQUAL, $data->id);
+          $query->add_keyvalue('name', $data->name);
+          $query->add_keyvalue('data', $data->value);
+          $query->add_keyvalue('public', $data->public);
+          $query->add_keyvalue('last_update', date('Y-m-d G:i:s'));
+          $res = $query->exec($data->force);
+          $this->rep->update($res ? true : false);
         }
       break;
 
+      case "delete":
+        if ($data->id) {
+          $query = new Query(EQueryCommand::DELETE, $post->type);
+          $query->add_param('id', EComparator::EQUAL, $data->id);
+          $res = $query->exec($data->force);
+          if ($res) {
+            $afr = SQL::affected_row();
+            $this->rep->update($afr > 0 ? true : false);
+          } else {
+            $this->rep->nok('no user');
+          }
+        }
+      break;
 
       case "connect":
-        $res = USER::connect($data->field, md5($data->value));
-        $msg = $res ? "Connection réussie" : "Nom d'utilisateur ou mot de passe incorrect";
-        $this->rep->update($res, $msg);
+        if ($data->username && $data->password) {
+          $res = USER::connect($data->username, md5($data->password));
+          $msg = $res ? "Connection réussie" : "Nom d'utilisateur ou mot de passe incorrect";
+          $this->rep->update($res, $msg);
+        } else {
+          $user = USER::get();
+          $this->rep->update(
+            $user ? true : false,
+            $user ? "Connecté en tant que $user->name" : null
+          );
+        }
       break;
 
       case "disconnect":
-        USER::disconnect();
+        $wc = USER::disconnect();
+        $this->rep->update($wc);
       break;
 
       default:
@@ -98,10 +115,13 @@ class Ajax {
 
     // SEND REPSONSE
     SQL::close();
-    $this->send();
+    $this->send($data->debug);
   }
 
-  function send() {
+  function send($debug) {
+    if ($debug) {
+      $this->rep->data = SQL::get_queries();
+    }
     $this->rep->query_count = SQL::query_count();
     $this->rep->elapsed_time = SQL::get_elapsed_time();
 
@@ -109,55 +129,6 @@ class Ajax {
     echo json_encode($this->rep);
   }
 
-
-
-
-  /* -----------------
-  *    SQL IMPORT
-  ----------------- */
-
-  function quote_data() {
-    $ignore_quotes = array("activated", "admin", "actif", "checked");
-
-    $query = new Query(EQueryCommand::SELECT, $post->type);
-    $query->set_order("id");
-    $res = $query->exec(true);
-
-    $reps = array();
-
-    while ($arr = SQL::fetch_assoc($res)) {
-      $row = new Data($arr);
-      $keys = array_keys((array)$row->data);
-
-      $str_data = "{";
-      $first = true;
-      foreach ($row->data as $key => $value) {
-        $str_data .= ($first ? "" : ", ") . "\"$key\": ". (in_array($key, $ignore_quotes) ? $value : "'".addslashes($value)."'");
-        $first = false;
-      }
-      $str_data .= "}";
-
-      $query = new Query(EQueryCommand::UPDATE);
-      $query->add_param('id', EComparator::EQUAL, $row->id);
-      $query->add_keyvalue("data", $str_data);
-      $reps[] = $query->exec();
-    }
-    $this->rep->data = $reps;
-    $this->rep->ok('ok');
-  }
-
-  function db_import() {
-    $res = SQL::query("SELECT * FROM `fiboot_dndsheets` ORDER BY `id` ASC");
-    $query;
-    while ($row = SQL::fetch_assoc($res)) {
-      $data = '{"sheet": "'. addslashes($row['sheet']) .'"';
-      $data .= "}";
-      $query = "INSERT INTO `". self::TABLE ."` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `public`) VALUES ('".$row['id']."', '".$row['account_id']."', '".addslashes($row['name'])."', '".$data."', 'dnd_sheet', '".$row['date_created']."', '".$row['public']."')";
-      SQL::query($query);
-    }
-    $this->rep->data = $query;
-    $this->rep->ok();
-  }
 }
 
 new Ajax;

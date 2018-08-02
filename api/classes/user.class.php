@@ -12,6 +12,7 @@ class USER {
     if (SQL::query_count($res) === 1) {
       $arr = SQL::fetch_assoc($res);
       $user = new Data($arr);
+
       if ($user->data->password === $password) {
         $_SESSION['USER'] = $user;
         self::$data = $user;
@@ -22,7 +23,9 @@ class USER {
   }
 
   public static function disconnect() {
+    $wc = self::get();
     session_destroy();
+    return $wc ? true : false;
   }
 
   public static function get() {
