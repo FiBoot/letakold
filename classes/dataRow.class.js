@@ -4,10 +4,20 @@ class DataRow {
     this.account_id = json.account_id ? parseInt(json.account_id) : 0;
     this.type = json.type ? `${json.type}` : ``;
     this.name = json.name ? `${json.name}` : ``;
-    this.data =
-      this.type === 'dnd_sheet' ? { sheet: json.data.slice(10, json.data.length - 1) } : JSON.parse(json.data);
+    this.data = json.data ? `${json.data}` : ``;
     this.creation_date = json.creation_date ? new Date(json.creation_date) : new Date();
     this.last_update = json.last_update ? new Date(json.last_update) : new Date();
     this.public = json.public ? json.public : false;
+  }
+
+  parseData() {
+    try {
+      this.data =
+        this.type === 'dnd_sheet'
+          ? { sheet: this.data.slice(10, this.data.length - 1) }
+          : JSON.parse(this.data);
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

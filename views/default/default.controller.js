@@ -3,25 +3,22 @@ angular.module('App').controller('defaultCtrl', [
   '$rootScope',
   'ajaxService',
   function($scope, $rootScope, ajaxService) {
-    $scope.actions = ['get', 'list', 'new', 'save', 'update', 'delete', 'connect', 'disconnect'];
-    $scope.D = {
-      action: $scope.actions[0],
-      type: '',
-      field: '',
-      value: '',
-      force: false,
-      debug: false
-    };
-    $scope.data = null;
-    $scope.info = new AjaxInfo();
+    $scope.items = [];
 
-    $scope.submit = function submit() {
-      const D = $scope.D;
-      ajaxService.internalAjax(D.action, D.type, D, $scope.info, response => {
-        console.log(response.data);
-        $scope.data = response.data;
+    function loadHotItems() {
+      const options = {
+        orderby: 'last_update',
+        asc: false,
+        limit: 10
+      };
+      ajaxService.internalAjax('list', options, $scope.list, response => {
+        $scope.items = response.data;
         $rootScope.apply();
       });
-    };
+    }
+
+    $(document).ready(function() {
+      loadHotItems();
+    });
   }
 ]);

@@ -1,21 +1,11 @@
+<div class="container">
+  [{{items.length}}]
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="item in items">
+      <span>{{item.type}}</span>
+      <span>{{item.name}}</span>
+      <span>{{item.last_update.toLocaleDateString('fr-FR', {hour: '2-digit', minute: '2-digit'})}}</span>
+    </li>
+  </ul>
 
-
-<ajax-message info="info"></ajax-message>
-
-<form ng-submit="submit()">
-
-  <select class="form-control" ng-model="D.action">
-    <option ng-repeat="action in actions" value="{{action}}">{{action}}</option>
-  </select>
-  <input type="text" ng-model="D.type" placeholder="type">
-  <input type="text" ng-model="D.field" placeholder="field">
-  <input type="text" ng-model="D.value" placeholder="value">
-  force: <input type="checkbox" ng-model="D.force">
-  debug: <input type="checkbox" ng-model="D.debug">
-  <ajax-btn info="info" value="value" on-click="submit()"></ajax-btn>
-
-  <div>{{data.length}}</div>
-  <div>{{data}}</div>
-
-</form>
-
+</div>

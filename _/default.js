@@ -1,10 +1,3 @@
-
-function apply() {
-  if (!$scope.$root.$$phase) {
-    $scope.$apply();
-  }
-}
-
 function msplice(tab, item) {
   const index = tab.indexOf(item);
   if (index >= 0) {

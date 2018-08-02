@@ -2,7 +2,7 @@ class AjaxInfo {
   constructor() {
     this.pending = false;
     this.message = '';
-    this.status = null;
+    this.status = true;
   }
 
   update(pending, message, status) {

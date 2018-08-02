@@ -42,17 +42,13 @@ function ajaxService($rootScope) {
       jqxhr.always((jqXHR, textStatus, errorThrown) => {});
     },
 
-    internalAjax: function internalAjax(action, type, data, info = new AjaxInfo(), successCallback, errorCallback) {
-      info.update(true, `${action} ${type} ...`);
+    internalAjax: function internalAjax(action, data, info, successCallback, errorCallback) {
+      if (!info) {
+        info = new AjaxInfo();
+      }
+      info.update(true, `Requête ${action} en cours...`);
       $rootScope.apply();
-      this.ajax(
-        'api/ajax.php',
-        'POST',
-        { action: action, type: type, data: data },
-        info,
-        successCallback,
-        errorCallback
-      );
+      this.ajax('api/ajax.php', 'POST', { action: action, data: data }, info, successCallback, errorCallback);
       return info;
     }
   };

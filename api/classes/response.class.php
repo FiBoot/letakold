@@ -2,7 +2,7 @@
 
 class Response {
 
-  public $request;
+  public $action;
   public $status;
   public $message;
   public $data;
@@ -11,17 +11,13 @@ class Response {
   public $elapsed_time;
 
   function __construct() {
-    $this->request = null;
+    $this->action = null;
     $this->status = false;
     $this->message = "Une erreur s'est produite";
     $this->data = null;
 
     $this->query_count = 0;
     $this->elapsed_time = 0;
-  }
-
-  function set_request($action = null, $type = null) {
-    $this->request = "$action $type";
   }
 
   function update($status, $message = null) {

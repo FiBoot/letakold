@@ -1,17 +1,17 @@
 {
-    "editor.insertSpaces": true,
-    "editor.tabSize": 2,
-    "editor.wordWrap": "on",
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
 
-    "prettier.arrowParens": "avoid",
-    "prettier.bracketSpacing": true,
-    "prettier.jsxBracketSameLine": false,
-    "prettier.parser": "babylon",
-    "prettier.printWidth": 120,
-    "prettier.proseWrap": "preserve",
-    "prettier.semi": true,
-    "prettier.singleQuote": true,
-    "prettier.tabWidth": 2,
-    "prettier.trailingComma": "none",
-    "prettier.useTabs": false
+  "prettier.arrowParens": "avoid",
+  "prettier.bracketSpacing": true,
+  "prettier.jsxBracketSameLine": false,
+  "prettier.parser": "babylon",
+  "prettier.printWidth": 100,
+  "prettier.proseWrap": "preserve",
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "none",
+  "prettier.useTabs": false
 }

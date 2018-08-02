@@ -4,10 +4,29 @@ angular.module('App').controller('listCtrl', [
   '$routeParams',
   'ajaxService',
   function($scope, $rootScope, $routeParams, ajaxService) {
-    function init() {
-      $routeParams.type;
+    $scope.D = {
+      info: new AjaxInfo(),
+      type: null,
+      list: []
+    };
+
+    function loadList(type) {
+      $scope.type = type;
+      const options = {
+        type: type,
+        order: 'last_update'
+      };
+      ajaxService.internalAjax('list', options, $scope.D.info, response => {
+        $scope.list = response.data;
+      });
     }
 
-    init();
+    $(document).ready(function() {
+      // loadList($routeParams.type);
+    });
+
+    $scope.click = function click() {
+      loadList($routeParams.type);
+    };
   }
 ]);

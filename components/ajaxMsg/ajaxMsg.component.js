@@ -12,8 +12,8 @@ function ajaxMessageController($scope, $element, $attrs) {
   };
 }
 
-angular.module('App').component('ajaxMessage', {
-  templateUrl: 'components/ajaxMessage/ajaxMessage.template.html',
+angular.module('App').component('ajaxMsg', {
+  templateUrl: 'components/ajaxMsg/ajaxMsg.template.html',
   controller: ajaxMessageController,
   bindings: {
     info: '<'

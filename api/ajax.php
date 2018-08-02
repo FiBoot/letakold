@@ -17,23 +17,22 @@ class Ajax {
     $this->rep = new Response;
 
     if ($post) {
-      $this->rep->set_request($post->action, $post->type);
-      $this->exec($post);
+      $this->rep->action = $post->action;
+      $this->exec($post->action, $post->data);
     }
   }
 
 
-  function exec($post) {
+  function exec($action, $data) {
 
     SQL::start();
-    $data = $post->data;
 
     // PROCESS POST
-    switch ($post->action) {
+    switch ($action) {
 
       case "get":
         if ($data->id) {
-          $query = new Query(EQueryCommand::SELECT, $post->type);
+          $query = new Query(EQueryCommand::SELECT, $data->type);
           $query->add_param('id', EComparator::EQUAL, $data->id);
           $res = $query->exec($data->force);
           $res_count = SQL::row_number($res);
@@ -47,14 +46,21 @@ class Ajax {
       break;
 
       case "list":
-        $query = new Query(EQueryCommand::SELECT, $post->type);
+        $query = new Query(EQueryCommand::SELECT, $data->type);
+        if ($data->orderby) {
+          $query->set_order($data->orderby, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
+        }
+        if ($data->limit) {
+          $query->set_limit($data->limit);
+        }
         $res = $query->exec($data->force);
         $this->rep->data = SQL::assoc_tab($res);
+        $this->rep->ok();
       break;
 
       case 'new':
         $query = new Query(EQueryCommand::INSERT);
-        $query->add_keyvalue('type', $post->type);
+        $query->add_keyvalue('type', $data->type);
         $query->add_keyvalue('name', $data->name);
         $query->add_keyvalue('data', $data->value);
         $query->add_keyvalue('public', $data->public);
@@ -65,7 +71,7 @@ class Ajax {
 
       case "save":
         if ($data->id) {
-          $query = new Query(EQueryCommand::UPDATE, $post->type);
+          $query = new Query(EQueryCommand::UPDATE, $data->type);
           $query->add_param('id', EComparator::EQUAL, $data->id);
           $query->add_keyvalue('name', $data->name);
           $query->add_keyvalue('data', $data->value);
@@ -78,7 +84,7 @@ class Ajax {
 
       case "delete":
         if ($data->id) {
-          $query = new Query(EQueryCommand::DELETE, $post->type);
+          $query = new Query(EQueryCommand::DELETE, $data->type);
           $query->add_param('id', EComparator::EQUAL, $data->id);
           $res = $query->exec($data->force);
           if ($res) {
