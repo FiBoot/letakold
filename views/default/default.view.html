@@ -1,4 +1,11 @@
 <div class="container">
+
+  <ajax-msg info="info"></ajax-msg>
+
+  <ajax-btn info="info" value="test" on-click="test()"></ajax-btn>
+  <ajax-btn info="info" value="connect" on-click="connect()" class="btn-info"></ajax-btn>
+  <ajax-btn info="info" value="disconnect" on-click="disconnect()" class="btn-danger"></ajax-btn>
+
   [{{items.length}}]
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="item in items">

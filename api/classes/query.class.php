@@ -57,6 +57,7 @@ class Query {
   private $type;
   private $params;
   private $keyvalues;
+  private $item;
   private $order;
   private $limit;
 
@@ -65,7 +66,7 @@ class Query {
     $this->command = $command;
     $this->type = $type;
     $this->params = array();
-    $this->keyvalues = array();
+    $this->item = null;
     $this->order = "";
     $this->limit = "";
   }
@@ -85,12 +86,20 @@ class Query {
     array_push($this->keyvalues, $keyvalue);
   }
 
+  public function set_item($item) {
+    $this->item = $item;
+  }
+
   public function set_order($field, $order = EQueryOrder::ASC) {
-    $this->order = "ORDER BY `$field` $order";
+    if ($field) {
+      $this->order = "ORDER BY `$field` $order";
+    }
   }
 
   public function set_limit($limit) {
-    $this->limit = "LIMIT $limit";
+    if ($limit) {
+      $this->limit = "LIMIT $limit";
+    }
   }
 
 
@@ -139,7 +148,7 @@ class Query {
   }
 
 
-  public function exec($force = false) {
+  public function exec($force = false, $item = null) {
     if ($this->type) {
       $this->add_param('type', EComparator::EQUAL, $this->type);
     }
@@ -156,10 +165,13 @@ class Query {
       break;
 
       case EQueryCommand::INSERT:
-        if ($user) {
-          $this->add_keyvalue('account_id', $user->id);
-          $qkv = $this->build_insert_keyvalue();
-          $query = "INSERT INTO `". self::TABLE ."` ($qkv->keys) VALUES ($qkv->values)";
+        if ($user && $item) {
+          $item->accout_id = $user->id;
+          $now = date('Y-m-d G:i:s');
+          $item->creation_date = $now;
+          $item->last_update = $now;
+          $insert_query = $item->insert_query();
+          $query = "INSERT INTO `". self::TABLE ."` $insert_query";
         }
       break;
 

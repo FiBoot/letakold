@@ -14,6 +14,7 @@ angular.module('App').component('ajaxBtn', {
   bindings: {
     info: '<',
     value: '@',
+    class: '@',
     onClick: '&'
   }
 });

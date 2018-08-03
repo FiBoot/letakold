@@ -6,9 +6,7 @@ class Ajax {
 
   const TABLE = "fiboot_global";
 
-  private $user;
   private $rep;
-
 
 	function __construct() {
     $input = file_get_contents("php://input");
@@ -18,82 +16,54 @@ class Ajax {
 
     if ($post) {
       $this->rep->action = $post->action;
+      SQL::start();
       $this->exec($post->action, $post->data);
+      SQL::close();
+      $this->send($post->data->debug);
     }
   }
 
 
   function exec($action, $data) {
 
-    SQL::start();
-
-    // PROCESS POST
     switch ($action) {
 
+      case 'test':
+        $d = new Data((array)$data->item);
+        $d->encode_data();
+        $this->rep->data = $d;
+        $this->rep->ok('oui');
+      break;
+
       case "get":
-        if ($data->id) {
-          $query = new Query(EQueryCommand::SELECT, $data->type);
-          $query->add_param('id', EComparator::EQUAL, $data->id);
-          $res = $query->exec($data->force);
-          $res_count = SQL::row_number($res);
-          if ($res_count === 1) {
-            $this->rep->data = SQL::fetch_assoc($res);
-            $this->rep->ok();
-          } else {
-            $this->rep->nok();
-          }
-        }
+        $result = $this->_get($data);
+        $this->rep->data = $result;
+        $this->rep->update($result ? true : false);
       break;
 
       case "list":
-        $query = new Query(EQueryCommand::SELECT, $data->type);
-        if ($data->orderby) {
-          $query->set_order($data->orderby, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
-        }
-        if ($data->limit) {
-          $query->set_limit($data->limit);
-        }
-        $res = $query->exec($data->force);
-        $this->rep->data = SQL::assoc_tab($res);
-        $this->rep->ok();
+        $result = $this->_list($data);
+        $this->rep->data = $result;
+        $this->rep->update($result ? true : false);
       break;
 
       case 'new':
-        $query = new Query(EQueryCommand::INSERT);
-        $query->add_keyvalue('type', $data->type);
-        $query->add_keyvalue('name', $data->name);
-        $query->add_keyvalue('data', $data->value);
-        $query->add_keyvalue('public', $data->public);
-        $query->add_keyvalue('last_update', date('Y-m-d G:i:s'));
-        $res = $query->exec($data->force);
-        $this->rep->update($res ? true : false);
+        $result = $this->_create($data);
+        if ($result) {
+          $item = $this->_get($data);
+          $this->rep->data = $item;
+          $this->rep->update($item ? true : false);
+        } else {
+          $this->rep->nok();
+        }
       break;
 
       case "save":
-        if ($data->id) {
-          $query = new Query(EQueryCommand::UPDATE, $data->type);
-          $query->add_param('id', EComparator::EQUAL, $data->id);
-          $query->add_keyvalue('name', $data->name);
-          $query->add_keyvalue('data', $data->value);
-          $query->add_keyvalue('public', $data->public);
-          $query->add_keyvalue('last_update', date('Y-m-d G:i:s'));
-          $res = $query->exec($data->force);
-          $this->rep->update($res ? true : false);
-        }
+
       break;
 
       case "delete":
-        if ($data->id) {
-          $query = new Query(EQueryCommand::DELETE, $data->type);
-          $query->add_param('id', EComparator::EQUAL, $data->id);
-          $res = $query->exec($data->force);
-          if ($res) {
-            $afr = SQL::affected_row();
-            $this->rep->update($afr > 0 ? true : false);
-          } else {
-            $this->rep->nok('no user');
-          }
-        }
+
       break;
 
       case "connect":
@@ -117,14 +87,51 @@ class Ajax {
 
       default:
         $this->rep->nok("Aucune action");
+
     }
 
-    // SEND REPSONSE
-    SQL::close();
-    $this->send($data->debug);
   }
 
-  function send($debug) {
+
+  private function _get($data) {
+    if ($data->id) {
+      $query = new Query(EQueryCommand::SELECT, $data->type);
+      $query->add_param('id', EComparator::EQUAL, $data->id);
+      $res = $query->exec($data->force);
+      if (SQL::row_number($res) === 1) {
+        return SQL::fetch_assoc($res);
+      }
+    }
+    return null;
+  }
+
+  private function _list($data) {
+    $query = new Query(EQueryCommand::SELECT, $data->type);
+    $query->set_order($data->orderby, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
+    $query->set_limit($data->limit);
+    $res = $query->exec($data->force);
+    return SQL::assoc_tab($res);
+  }
+
+  private function _create($data) {
+    if ($data->item) {
+      $item = new Data((array)$data->item);
+      $query = new Query(EQueryCommand::INSERT);
+      return $query->exec($data->force, $item);
+    }
+    return null;
+  }
+
+  private function _upodate($data) {
+
+  }
+
+  private function _delete($data) {
+
+  }
+
+
+  private function send($debug) {
     if ($debug) {
       $this->rep->data = SQL::get_queries();
     }

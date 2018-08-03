@@ -34,7 +34,6 @@ class SQL {
 
 	public static function fetch_assoc($res) {
 		return mysql_fetch_assoc($res);
-		// return new Data(mysql_fetch_assoc($res));
 	}
 
 	public static function row_number($res) {

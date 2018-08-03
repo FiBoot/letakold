@@ -12,6 +12,7 @@ class USER {
     if (SQL::query_count($res) === 1) {
       $arr = SQL::fetch_assoc($res);
       $user = new Data($arr);
+      $user->parse_data();
 
       if ($user->data->password === $password) {
         $_SESSION['USER'] = $user;

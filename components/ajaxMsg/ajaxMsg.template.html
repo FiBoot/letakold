@@ -1,5 +1,6 @@
 <div class="alert"
-  ng-show="$ctrl.info.message"
+  ng-click="click()"
+  ng-show="$ctrl.info.message && $ctrl.display"
   ng-class="{
     'alert-warning': $ctrl.info.pending,
     'alert-danger': !$ctrl.info.pending && !$ctrl.info.status,

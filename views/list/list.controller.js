@@ -22,11 +22,7 @@ angular.module('App').controller('listCtrl', [
     }
 
     $(document).ready(function() {
-      // loadList($routeParams.type);
-    });
-
-    $scope.click = function click() {
       loadList($routeParams.type);
-    };
+    });
   }
 ]);
