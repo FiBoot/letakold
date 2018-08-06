@@ -176,11 +176,11 @@ class Query {
       break;
 
       case EQueryCommand::UPDATE:
-        if ($user) {
+        if ($user && $item) {
           $this->add_private_param($force, $user);
           $query_params = $this->get_query_params();
-          $qkv = $this->build_update_keyvalue();
-          $query = "UPDATE `". self::TABLE ."` SET $qkv WHERE $query_params";
+          $update_query = $item->update_query();
+          $query = "UPDATE `". self::TABLE ."` SET $update_query WHERE $query_params";
         }
       break;
 
@@ -193,7 +193,7 @@ class Query {
       break;
     }
 
-    return $query ? SQL::query("$query;") : null;
+    return $query ? SQL::query($query) : null;
   }
 
 }

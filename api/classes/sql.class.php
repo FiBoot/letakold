@@ -26,9 +26,7 @@ class SQL {
 			$error = mysql_error();
 			die("Sql error within: <span style='color:#555;'>$req</span><br /><span style='color:#C00;'>$error</span>");
 		}
-
-		array_push(self::$queries, $req);
-
+		array_push(self::$queries, "$req;");
 		return $result;
 	}
 
@@ -50,6 +48,13 @@ class SQL {
 			$tab[] = $row;
 		}
 		return $tab;
+	}
+
+	public static function last_insert_id() {
+		$arr = self::fetch_assoc(
+			self::query("SELECT LAST_INSERT_ID()")
+		);
+		return $arr["LAST_INSERT_ID()"];
 	}
 
 	public static function query_count() {

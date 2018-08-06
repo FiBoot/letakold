@@ -28,13 +28,6 @@ class Ajax {
 
     switch ($action) {
 
-      case 'test':
-        $d = new Data((array)$data->item);
-        $d->encode_data();
-        $this->rep->data = $d;
-        $this->rep->ok('oui');
-      break;
-
       case "get":
         $result = $this->_get($data);
         $this->rep->data = $result;
@@ -50,16 +43,17 @@ class Ajax {
       case 'new':
         $result = $this->_create($data);
         if ($result) {
-          $item = $this->_get($data);
-          $this->rep->data = $item;
-          $this->rep->update($item ? true : false);
+          $data->id = $result;
+          $this->rep->data = $this->_get($data);
+          $this->rep->ok();
         } else {
           $this->rep->nok();
         }
       break;
 
       case "save":
-
+        $result = $this->_update($data);
+        $this->rep->update($result > 0 ? true : false);
       break;
 
       case "delete":
@@ -93,6 +87,7 @@ class Ajax {
   }
 
 
+  // Retourne la ligne recherchée
   private function _get($data) {
     if ($data->id) {
       $query = new Query(EQueryCommand::SELECT, $data->type);
@@ -105,6 +100,7 @@ class Ajax {
     return null;
   }
 
+  // Retourne le tableau recherché
   private function _list($data) {
     $query = new Query(EQueryCommand::SELECT, $data->type);
     $query->set_order($data->orderby, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
@@ -113,19 +109,31 @@ class Ajax {
     return SQL::assoc_tab($res);
   }
 
+  // Retourne l'ID de l'objet créé
   private function _create($data) {
     if ($data->item) {
       $item = new Data((array)$data->item);
       $query = new Query(EQueryCommand::INSERT);
-      return $query->exec($data->force, $item);
+      $query->exec($data->force, $item);
+      return SQL::last_insert_id();
     }
     return null;
   }
 
-  private function _upodate($data) {
-
+  // Retourne le nombre de lignes afféctées (-1 echec)
+  private function _update($data) {
+    $user = USER::get();
+    if ($data->item) {
+      $item = new Data((array)$data->item);
+      $query = new Query(EQueryCommand::UPDATE);
+      $query->add_param('id', EComparator::EQUAL, $item->id);
+      $query->exec($data->force, $item);
+      return SQL::affected_row();
+    }
+    return null;
   }
 
+  // Retourne le nombre de lignes afféctées
   private function _delete($data) {
 
   }
