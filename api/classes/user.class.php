@@ -7,14 +7,15 @@ class USER {
   public static function connect($username, $password) {
     $query = new Query(EQueryCommand::SELECT, 'account');
     $query->add_param('name', EComparator::EQUAL, $username);
-    $res = $query->exec(true);
+    $query->force();
+    $res = $query->exec();
 
     if (SQL::query_count($res) === 1) {
       $arr = SQL::fetch_assoc($res);
       $user = new Data($arr);
       $user->parse_data();
 
-      if ($user->data->password === $password) {
+      if ($user->data->password === md5($password)) {
         $_SESSION['USER'] = $user;
         self::$data = $user;
         return true;

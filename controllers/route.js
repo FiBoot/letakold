@@ -7,6 +7,11 @@ angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProv
       controller: 'defaultCtrl',
       templateUrl: 'views/default/default.view.html'
     })
+    // admin
+    .when('/admin', {
+      controller: 'adminCtrl',
+      templateUrl: 'views/admin/admin.view.html'
+    })
     // list
     .when('/list/:type', {
       controller: 'listCtrl',

@@ -30,14 +30,14 @@ class Data {
 
   public function insert_query() {
     $fields = "`account_id`, `name`, `data`, `type`, `creation_date`, `last_update`, `public`";
-    $values = "$this->account_id, '".addslashes($this->name)."', '".addslashes($this->encode_data())."', '$this->type', '$this->creation_date', '$this->last_update', $this->public";
+    $values = "$this->account_id, '".str_replace ("'", "\'", $this->name)."', '".str_replace ("'", "\'", $this->encode_data())."', '$this->type', '$this->creation_date', '$this->last_update', $this->public";
     return "($fields) VALUES ($values)";
   }
 
   public function update_query() {
     $now = date('Y-m-d G:i:s');
-    $query = "`name` = '".addslashes($this->name)."', ";
-    $query .= "`data` = '".addslashes($this->encode_data())."', ";
+    $query = "`name` = '".str_replace ("'", "\'", $this->name)."', ";
+    $query .= "`data` = '".str_replace ("'", "\'", $this->encode_data())."', ";
     $query .= "`last_update` = '$now', ";
     $query .= "`public` = '$this->public'";
     return $query;

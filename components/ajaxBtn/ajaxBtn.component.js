@@ -1,5 +1,6 @@
 function ajaxBtnController($scope, $element, $attrs) {
-  var ctrl = this;
+  let ctrl = this;
+
   this.$onInit = function onInit() {};
   this.$onChanges = function onChanges(changesObj) {};
 

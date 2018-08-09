@@ -1,5 +1,8 @@
 class DataRow {
   constructor(json) {
+    if (!json) {
+      json = {};
+    }
     this.id = json.id ? parseInt(json.id) : 0;
     this.account_id = json.account_id ? parseInt(json.account_id) : 0;
     this.type = json.type ? `${json.type}` : ``;
@@ -17,7 +20,9 @@ class DataRow {
           ? { sheet: this.data.slice(10, this.data.length - 1) }
           : JSON.parse(this.data);
     } catch (e) {
-      console.log(e);
+      console.warn(`DataRow parseData JSON.parse`, e, this);
+      return false;
     }
+    return true;
   }
 }

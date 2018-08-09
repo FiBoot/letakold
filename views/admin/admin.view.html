@@ -1,0 +1,90 @@
+<div class="container spaced">
+
+  <ajax-msg info="info"></ajax-msg>
+
+  <form ng-submit="search()" class="form-inline">
+    <input type="text" class="form-control" ng-model="searchString">
+    <ajax-btn info="info" value="Search" class="btn-info"></ajax-btn>
+  </form>
+
+  <div class="vspaced"></div>
+
+  <div ng-show="!D.loaded">Loading data...</div>
+  <table class="table unvisible" ng-class="{'visible': D.loaded}">
+    <tr>
+      <th>id</th>
+      <th>account_id</th>
+      <th>name</th>
+      <th>data</th>
+      <th>type</th>
+      <th>creation_date</th>
+      <th>last_update</th>
+      <th>public</th>
+      <th>actions</th>
+    </tr>
+    <tr ng-repeat="item in D.list">
+      <td>
+        <span ng-show="!item.edit">{{item.id}}</span>
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.account_id}}</span>
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.name}}</span>
+        <input ng-show="item.edit" type="text" ng-model="E.name" class="form-control" placeholder="name">
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.data}}</span>
+        <input ng-show="item.edit" type="text" ng-model="E.data" class="form-control" placeholder="data">
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.type}}</span>
+        <input ng-show="item.edit" type="text" ng-model="E.type" class="form-control" placeholder="type">
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.creation_date.toLocaleString()}}</span>
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.last_update.toLocaleString()}}</span>
+      </td>
+      <td>
+        <span ng-show="!item.edit">{{item.public}}</span>
+        <input ng-show="item.edit" type="checkbox" ng-model="E.public" ng-checked="E.public">
+      </td>
+      <td>
+        <div class="btn-group" role="group" aria-label="edition" ng-show="item.edit">
+          <ajax-btn class="btn-success" value="Save" on-click="save(E)"></ajax-btn>
+          <button type="button" class="btn btn-default" title="edit" ng-click="item.edit=false">Cancel</button>
+        </div>
+        <div class="btn-group" role="group" aria-label="actions" ng-show="!item.edit">
+          <button type="button" class="btn btn-info" title="edit" ng-click="edit(item)">Edit</button>
+          <button type="button" class="btn btn-danger" title="remove" ng-click="delete(item)">Delete</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <input type="text" ng-model="N.account_id" class="form-control" placeholder="account_id">
+      </td>
+      <td>
+        <input type="text" ng-model="N.name" class="form-control" placeholder="name">
+      </td>
+      <td>
+        <input type="text" ng-model="N.data" class="form-control" placeholder="data">
+      </td>
+      <td>
+        <input type="text" ng-model="N.type" class="form-control" placeholder="type">
+      </td>
+      <td></td>
+      <td></td>
+      <td>
+        <input type="checkbox" ng-model="N.public">
+      </td>
+      <td>
+        <ajax-btn class="btn-success" info="info" value="Add" on-click="add(N)"></ajax-btn>
+      </td>
+    </tr>
+  </table>
+
+</div>

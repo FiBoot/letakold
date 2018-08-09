@@ -54,6 +54,8 @@ class Query {
 
   const TABLE = "fiboot_global";
 
+  private $force;
+
   private $type;
   private $params;
   private $keyvalues;
@@ -63,6 +65,8 @@ class Query {
 
 
 	function __construct($command = EQueryCommand::SELECT, $type = null) {
+    $this->force = false;
+
     $this->command = $command;
     $this->type = $type;
     $this->params = array();
@@ -71,6 +75,10 @@ class Query {
     $this->limit = "";
   }
 
+
+  public function force() {
+    $this->force = true;
+  }
 
   public function add_param($field, $comparator, $value) {
     $param = new QueryParam($field, $comparator, $value);
@@ -111,10 +119,9 @@ class Query {
     return (count($pq) > 0) ? $pq : "true";
   }
 
-  private function add_public_param($force) {
-    if (!$force) {
+  private function add_public_param($user) {
+    if (!($this->force || $user->admin)) {
       $public_param = new QueryParam('public', EComparator::EQUAL, 1);
-      $user = USER::get();
       if ($user) {
         $user_param = new QueryParam('account_id', EComparator::EQUAL, $user->id);
         $public_param->or_query($user_param);
@@ -123,8 +130,8 @@ class Query {
     }
   }
 
-  private function add_private_param($force, $user) {
-    if (!$force && !$user->admin) {
+  private function add_private_param($user) {
+    if (!($this->force || $user->admin)) {
       $this->add_param("account_id", EComparator::EQUAL, $user->id);
     }
   }
@@ -148,7 +155,7 @@ class Query {
   }
 
 
-  public function exec($force = false, $item = null) {
+  public function exec($item = null) {
     if ($this->type) {
       $this->add_param('type', EComparator::EQUAL, $this->type);
     }
@@ -159,7 +166,7 @@ class Query {
     switch ($this->command) {
 
       case EQueryCommand::SELECT:
-        $this->add_public_param($force);
+        $this->add_public_param($user);
         $query_params = $this->get_query_params();
         $query = rtrim("SELECT * FROM `". self::TABLE ."` WHERE $query_params $this->order $this->limit");
       break;
@@ -177,7 +184,8 @@ class Query {
 
       case EQueryCommand::UPDATE:
         if ($user && $item) {
-          $this->add_private_param($force, $user);
+          $this->add_param('id', EComparator::EQUAL, $item->id);
+          $this->add_private_param($user);
           $query_params = $this->get_query_params();
           $update_query = $item->update_query();
           $query = "UPDATE `". self::TABLE ."` SET $update_query WHERE $query_params";
@@ -185,8 +193,9 @@ class Query {
       break;
 
       case EQueryCommand::DELETE:
-        if ($user) {
-          $this->add_private_param($force, $user);
+        if ($user && $item) {
+          $this->add_param('id', EComparator::EQUAL, $item->id);
+          $this->add_private_param($user);
           $query_params = $this->get_query_params();
           $query = "DELETE FROM `". self::TABLE ."` WHERE $query_params";
         }

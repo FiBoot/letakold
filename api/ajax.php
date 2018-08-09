@@ -45,24 +45,33 @@ class Ajax {
         if ($result) {
           $data->id = $result;
           $this->rep->data = $this->_get($data);
-          $this->rep->ok();
+          $this->rep->ok("Création réussie");
         } else {
-          $this->rep->nok();
+          $this->rep->nok("Création échouée");
         }
       break;
 
       case "save":
         $result = $this->_update($data);
-        $this->rep->update($result > 0 ? true : false);
+        if ($result > 0) {
+          $this->rep->ok("Sauvegarde réussie");
+        } else {
+          $this->rep->nok("Sauvegarde échouée");
+        }
       break;
 
       case "delete":
-
+        $result = $this->_delete($data);
+        if ($result > 0) {
+          $this->rep->ok("Suppression réussie");
+        } else {
+          $this->rep->nok("Suppression échouée");
+        }
       break;
 
       case "connect":
         if ($data->username && $data->password) {
-          $res = USER::connect($data->username, md5($data->password));
+          $res = USER::connect($data->username, $data->password);
           $msg = $res ? "Connection réussie" : "Nom d'utilisateur ou mot de passe incorrect";
           $this->rep->update($res, $msg);
         } else {
@@ -92,7 +101,7 @@ class Ajax {
     if ($data->id) {
       $query = new Query(EQueryCommand::SELECT, $data->type);
       $query->add_param('id', EComparator::EQUAL, $data->id);
-      $res = $query->exec($data->force);
+      $res = $query->exec();
       if (SQL::row_number($res) === 1) {
         return SQL::fetch_assoc($res);
       }
@@ -105,7 +114,7 @@ class Ajax {
     $query = new Query(EQueryCommand::SELECT, $data->type);
     $query->set_order($data->orderby, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
     $query->set_limit($data->limit);
-    $res = $query->exec($data->force);
+    $res = $query->exec();
     return SQL::assoc_tab($res);
   }
 
@@ -114,7 +123,7 @@ class Ajax {
     if ($data->item) {
       $item = new Data((array)$data->item);
       $query = new Query(EQueryCommand::INSERT);
-      $query->exec($data->force, $item);
+      $query->exec($item);
       return SQL::last_insert_id();
     }
     return null;
@@ -122,12 +131,10 @@ class Ajax {
 
   // Retourne le nombre de lignes afféctées (-1 echec)
   private function _update($data) {
-    $user = USER::get();
     if ($data->item) {
       $item = new Data((array)$data->item);
       $query = new Query(EQueryCommand::UPDATE);
-      $query->add_param('id', EComparator::EQUAL, $item->id);
-      $query->exec($data->force, $item);
+      $query->exec($item);
       return SQL::affected_row();
     }
     return null;
@@ -135,7 +142,13 @@ class Ajax {
 
   // Retourne le nombre de lignes afféctées
   private function _delete($data) {
-
+    if ($data->item) {
+      $item = new Data((array)$data->item);
+      $query = new Query(EQueryCommand::DELETE);
+      $query->exec($item);
+      return SQL::affected_row();
+    }
+    return null;
   }
 
 

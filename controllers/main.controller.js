@@ -10,6 +10,8 @@ angular.module('App').controller('mainCtrl', [
     };
 
     // autoconnect
-    ajaxService.internalAjax('connect');
+    $(document).ready(function() {
+      ajaxService.internalAjax('connect');
+    });
   }
 ]);

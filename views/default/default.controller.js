@@ -13,7 +13,7 @@ angular.module('App').controller('defaultCtrl', [
 
     $scope.submit = function submit() {
       try {
-        let data = JSON.parse($scope.F.data);
+        let data = $scope.F.data ? JSON.parse($scope.F.data) : null;
         const options = ajaxService.internalAjax($scope.F.action, data, $scope.info, response => {
           console.log(response);
         });
