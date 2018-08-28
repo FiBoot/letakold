@@ -1,61 +1,17 @@
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
-}
-body {
-  margin-top: 50px;
 }
 
 .page {
   width: 100%;
   min-width: 350px;
+  margin-top: 50px;
 }
 
-.spaced {
-  padding: 10px;
-}
-.bspaced {
-  padding: 20px;
-}
-.sspaced {
-  padding: 5px;
-}
-.mspaced {
-  padding: 2px;
-}
-.hspaced {
-  padding: 0 10px;
-}
-.bhspaced {
-  padding: 0 20px;
-}
-.shspaced {
-  padding: 0 5px;
-}
-.mhspaced {
-  padding: 0 2px;
-}
-.vspaced {
-  padding: 10px 0;
-}
-.bvspaced {
-  padding: 20px 0;
-}
-.svspaced {
-  padding: 5px 0;
-}
-.mvspaced {
-  padding: 2px 0;
-}
-
-.centered {
-  text-align: center;
-}
-.unvisible {
-  visibility: hidden;
-}
-.unvisible.visible {
+.centered	    { text-align: center; }
+.unvisible	  { visibility: hidden; }
+.unvisible.visible	{
   visibility: visible;
 }
 .openable {
@@ -67,3 +23,30 @@ body {
   height: auto;
   min-height: 0;
 }
+
+/* SPACE */
+.spaced	      { padding: 8px; }
+.bigspaced	  { padding: 20px; }
+.smallspaced	{ padding: 5px; }
+.minispaced	  { padding: 2px; }
+.hspaced	    { padding: 0 8px; }
+.bighspaced	  { padding: 0 20px; }
+.smallhspaced	{ padding: 0 5px; }
+.minihspaced	{ padding: 0 2px; }
+.vspaced	    { padding: 8px 0; }
+.bigvspaced	  { padding: 20px 0; }
+.smallvspaced	{ padding: 5px 0; }
+.minivspaced	{ padding: 2px 0; }
+/* F-COLOR */
+.dark	        { color: #111; }
+.darkgrey	    { color: #333; }
+.grey	        { color: #666; }
+.lightgrey	  { color: #AAA; }
+.light	      { color: #EEE; }
+/* BG-COLOR */
+.darkbg	      { background-color: #111; }
+.darkgreybg	  { background-color: #333; }
+.greybg	      { background-color: #666; }
+.lightgreybg	{ background-color: #AAA; }
+.lightbg	    { background-color: #EEE; }
+

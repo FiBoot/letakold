@@ -1,14 +1,22 @@
 <div class="container spaced">
 
+  <div class="svspaced"></div>
   <ajax-msg info="info"></ajax-msg>
 
-  <form ng-submit="search()" class="form-inline">
-    <input type="text" class="form-control" ng-model="searchString">
-    <ajax-btn info="info" value="Search" class="btn-info"></ajax-btn>
+  <!-- DISPLAY FILTER -->
+  <form class="form-inline">
+    <select class="form-control" ng-model="F.page" ng-change="calcDisplayList()">
+      <option ng-repeat="page in D.pages" ng-value="page">{{page}}</option>
+    </select>
+    <select class="form-control" ng-model="F.count" ng-change="calcPagination()">
+      <option ng-repeat="count in resultCounts" ng-value="count">{{count}}</option>
+    </select>
+    <span>[{{D.list.length}}]</span>
   </form>
 
   <div class="vspaced"></div>
 
+  <!-- LIST -->
   <div ng-show="!D.loaded">Loading data...</div>
   <table class="table unvisible" ng-class="{'visible': D.loaded}">
     <tr>
@@ -22,7 +30,7 @@
       <th>public</th>
       <th>actions</th>
     </tr>
-    <tr ng-repeat="item in D.list">
+    <tr ng-repeat="item in D.displayList">
       <td>
         <span ng-show="!item.edit">{{item.id}}</span>
       </td>

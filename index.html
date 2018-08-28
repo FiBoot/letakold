@@ -13,24 +13,43 @@
 
 <body ng-controller="mainCtrl">
 
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">Letakol.FiBoot</a>
-			</div>
-			<div id="navbar" class="collapse navbar-collapse">
-				<!-- collapse -->
-			</div>
-		</div>
-	</nav>
+	<div ng-show="!Loaded">
+		<h4 class="spaced centered darkgrey">Loading Letakol.FiBoot ..</h4>
+	</div>
 
-	<div class="page" ng-view></div>
+	<div class="unvisible" ng-class="{'visible': Loaded}">
+
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					 aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Letakol.FiBoot</a>
+				</div>
+				<div class="navbar-right collapse navbar-collapse">
+					<div class="vspaced" ng-show="!User.connected">
+						<form class="form-inline" on-submit="connect()">
+							<input type="text" class="form-control" ng-model="Login.username" placeholder="username">
+							<input type="password" class="form-control" ng-model="Login.password" placeholder="password">
+							<ajax-btn info="Login.info" value="Login" on-click="connect()"></ajax-btn>
+						</form>
+					</div>
+					<div class="vspaced" ng-show="User.connected">
+						<span class="light">{{User.name}}</span>
+						<ajax-btn info="Login.info" value="Logout" class="btn-danger" on-click="disconnect()"></ajax-btn>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<div class="page" ng-view></div>
+
+	</div>
 
 	<!-- lib -->
 	<script type="text/javascript" src="_/angular/angular.min.js"></script>

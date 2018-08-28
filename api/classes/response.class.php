@@ -21,7 +21,7 @@ class Response {
   }
 
   function update($status, $message = null) {
-    $this->status = $status;
+    $this->status = $status ? true : false;
     $this->message = $message;
   }
 

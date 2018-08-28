@@ -11,7 +11,7 @@ angular.module('App').controller('listCtrl', [
     };
 
     function loadList(type) {
-      $scope.type = type;
+      $scope.D.type = type;
       const options = {
         type: type,
         order: 'last_update'

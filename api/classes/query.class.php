@@ -120,7 +120,7 @@ class Query {
   }
 
   private function add_public_param($user) {
-    if (!($this->force || $user->admin)) {
+    if (!($this->force || $user->data->admin)) {
       $public_param = new QueryParam('public', EComparator::EQUAL, 1);
       if ($user) {
         $user_param = new QueryParam('account_id', EComparator::EQUAL, $user->id);
@@ -131,7 +131,7 @@ class Query {
   }
 
   private function add_private_param($user) {
-    if (!($this->force || $user->admin)) {
+    if (!($this->force || $user->data->admin)) {
       $this->add_param("account_id", EComparator::EQUAL, $user->id);
     }
   }
@@ -168,7 +168,8 @@ class Query {
       case EQueryCommand::SELECT:
         $this->add_public_param($user);
         $query_params = $this->get_query_params();
-        $query = rtrim("SELECT * FROM `". self::TABLE ."` WHERE $query_params $this->order $this->limit");
+        $where = $query_params ? "WHERE $query_params" : "";
+        $query = rtrim("SELECT * FROM `". self::TABLE ."` $where $this->order $this->limit");
       break;
 
       case EQueryCommand::INSERT:

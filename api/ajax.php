@@ -71,15 +71,27 @@ class Ajax {
 
       case "connect":
         if ($data->username && $data->password) {
-          $res = USER::connect($data->username, $data->password);
-          $msg = $res ? "Connection réussie" : "Nom d'utilisateur ou mot de passe incorrect";
-          $this->rep->update($res, $msg);
+          if (USER::connect($data->username, $data->password)) {
+            $user = USER::get();
+            $user->data = null;
+            $this->rep->data = $user;
+            $this->rep->ok("Connecté en tant que $user->name.");
+          } else {
+            $this->rep->nok("Utilisateur ou mot de passe incorrect.");
+          }
         } else {
-          $user = USER::get();
-          $this->rep->update(
-            $user ? true : false,
-            $user ? "Connecté en tant que $user->name" : null
-          );
+          $this->rep->nok();
+        }
+      break;
+
+      case "autoconnect":
+        $user = USER::get();
+        if ($user) {
+          $user->data = null;
+          $this->rep->data = $user;
+          $this->rep->ok("Connecté en tant que $user->name.");
+        } else {
+          $this->rep->nok();
         }
       break;
 
@@ -87,6 +99,12 @@ class Ajax {
         $wc = USER::disconnect();
         $this->rep->update($wc);
       break;
+
+case "import":
+db_import();
+$this->rep->data = Sql::get_queries();
+$this->rep->ok();
+break;
 
       default:
         $this->rep->nok("Aucune action");
@@ -163,6 +181,23 @@ class Ajax {
     echo json_encode($this->rep);
   }
 
+}
+
+function db_import() {
+  $res = Sql::query("SELECT * FROM `fiboot_dndsheets`");
+  while ($row = Sql::fetch_assoc($res)) {
+    $data = "{";
+    $data .= '"sheet": "'.str_replace('↵	', '\\n', addslashes(addslashes($row['sheet']))).'"';
+    $data .= "}";
+
+    $name = "name";
+    $id = 2000+intval($row['id']);
+    $type = "dndsheet";
+
+    $now = date('Y-m-d G:i:s');
+    $query = "INSERT INTO `fiboot_global` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `last_update`, `public`) VALUES ('".$id."', '".$row['account_id']."', '".str_replace("'", "\'", $row[$name])."', '".$data."', '$type', '".$row['date_created']."', '$now', '".$row['public']."')";
+    Sql::query($query);
+  }
 }
 
 new Ajax;
