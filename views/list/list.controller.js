@@ -7,22 +7,26 @@ angular.module('App').controller('listCtrl', [
     $scope.D = {
       info: new AjaxInfo(),
       type: null,
+      loaded: false,
       list: []
     };
 
-    function loadList(type) {
-      $scope.D.type = type;
+    function loadData() {
+      $scope.D.type = $routeParams.type;
       const options = {
-        type: type,
+        type: $scope.D.type,
         order: 'last_update'
       };
+      $scope.D.loaded = false;
       ajaxService.internalAjax('list', options, $scope.D.info, response => {
-        $scope.list = response.data;
+        $scope.D.list = response.data;
+        $scope.D.loaded = true;
+        $rootScope.apply();
       });
     }
 
-    $(document).ready(function() {
-      loadList($routeParams.type);
-    });
+    $scope.$on('connected', loadData);
+    $scope.$on('disconnected', loadData);
+    loadData();
   }
 ]);

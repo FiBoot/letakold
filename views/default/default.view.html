@@ -1,11 +1,12 @@
 <div class="container spaced">
 
-  <ajax-msg info="info"></ajax-msg>
+  <ajax-msg info="D.info"></ajax-msg>
 
-  <form ng-submit="submit()" class="form-inline">
-    <input type="text" class="form-control" ng-model="F.action">
-    <textarea class="form-control" ng-model="F.data"></textarea>
-    <ajax-btn info="info" value="submit" on-click="submit()"></ajax-btn>
-  </form>
+  <div class="card" ng-repeat="item in D.list" ng-click="goTo(item)" style="border:1px solid grey">
+    <div>{{item.name}}</div>
+    <div>{{item.account_id}}</div>
+    <div>{{item.type}}</div>
+    <div>{{item.last_update}}</div>
+  </div>
 
 </div>

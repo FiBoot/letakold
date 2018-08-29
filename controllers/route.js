@@ -17,5 +17,15 @@ angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProv
       controller: 'listCtrl',
       templateUrl: 'views/list/list.view.html'
     })
+
+    // story
+    .when('/story/new', {
+      controller: 'storyCtrl',
+      templateUrl: 'views/story/story.view.html'
+    })
+    .when('/story/:id', {
+      controller: 'storyCtrl',
+      templateUrl: 'views/story/story.view.html'
+    })
     .otherwise({ redirectTo: '/' });
 });

@@ -1,25 +1,33 @@
 angular.module('App').controller('defaultCtrl', [
   '$scope',
   '$rootScope',
+  '$location',
   'ajaxService',
-  function($scope, $rootScope, ajaxService) {
-    $scope.info = new AjaxInfo();
-
-    $scope.F = {
-      action: '',
-      data: '',
+  function($scope, $rootScope, $location, ajaxService) {
+    $scope.D = {
+      info: new AjaxInfo(),
+      loaded: false,
+      list: []
     };
 
-
-    $scope.submit = function submit() {
-      try {
-        let data = $scope.F.data ? JSON.parse($scope.F.data) : null;
-        const options = ajaxService.internalAjax($scope.F.action, data, $scope.info, response => {
-          console.log(response);
-        });
-      } catch (e) {
-        console.warn(e);
-      }
+    function loadData() {
+      const options = {
+        order: 'last_update',
+        limit: 12
+      };
+      ajaxService.internalAjax('list', options, $scope.D.info, response => {
+        $scope.D.list = response.data;
+        $rootScope.apply();
+      });
     }
+
+    $scope.goTo = function goTo(item) {
+      console.log(`list/${item.type}`);
+      $location.path(`list/${item.type}`);
+    };
+
+    $scope.$on('connected', loadData);
+    $scope.$on('disconnected', loadData);
+    loadData();
   }
 ]);

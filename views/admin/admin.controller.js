@@ -21,7 +21,7 @@ angular.module('App').controller('adminCtrl', [
       pages: [0]
     };
 
-    function loadList() {
+    function loadData() {
       ajaxService.internalAjax('list', null, null, response => {
         $scope.D.list = response.data
           .map(row => {
@@ -85,8 +85,8 @@ angular.module('App').controller('adminCtrl', [
       item.edit = true;
     };
 
-    $scope.$on('loaded', loadList);
-    $scope.$on('connected', loadList);
-    $scope.$on('disconnected', loadList);
+    $scope.$on('connected', loadData);
+    $scope.$on('disconnected', loadData);
+    loadData();
   }
 ]);

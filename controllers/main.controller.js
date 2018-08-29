@@ -4,7 +4,7 @@ angular.module('App').controller('mainCtrl', [
   'ajaxService',
   function($scope, $rootScope, ajaxService) {
     $rootScope.BASEURL = 'fiboot/-new/#/';
-    $rootScope.TIMESPAN = 150;
+    $rootScope.TIMESPAN = 250;
 
     $rootScope.apply = function apply() {
       if (!$scope.$root.$$phase) {
@@ -15,11 +15,14 @@ angular.module('App').controller('mainCtrl', [
     $scope.Loaded = false;
 
     $(document).ready(function() {
-      $scope.$broadcast('loaded');
       setTimeout(function() {
         $scope.Loaded = true;
+        $scope.$broadcast('loaded');
+        console.log('broadcasting');
         $rootScope.apply();
       }, $rootScope.TIMESPAN);
+
+      ajaxService.internalAjax('autoconnect', null, $scope.Login.info, connection);
     });
 
     $scope.User = {
@@ -55,9 +58,5 @@ angular.module('App').controller('mainCtrl', [
         }
       });
     };
-
-    $scope.$on('loaded', (event, data) => {
-      ajaxService.internalAjax('autoconnect', null, $scope.Login.info, connection);
-    });
   }
 ]);

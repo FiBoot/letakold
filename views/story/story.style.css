@@ -1,0 +1,118 @@
+#story_view .cadre {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  margin: 0 auto;
+  border: 1px solid #333;
+  background-size: cover;
+  background-position: center;
+}
+
+#story_view .cadre .text {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.25);
+  color: #333;
+  text-shadow: 0 0 2px #fff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#story_view .cadre .text .choices {
+  margin: 0;
+  padding-top: 5px;
+  padding-left: 20px;
+}
+#story_view .cadre .choices .choice {
+  cursor: pointer;
+}
+#story_view .cadre .choices .choice:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+#story_view ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+#story_view ul.screens input,
+#story_view ul.screens textarea,
+#story_view ul.screens select {
+  width: 100%;
+  min-height: 24px;
+  padding-left: 5px;
+  border-width: 1px 0;
+  border-style: solid;
+  border-color: #666;
+  resize: vertical;
+}
+
+#story_view ul.screens li.screen {
+  display: inline-block;
+  width: 340px;
+  margin: 15px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background-color: #eee;
+  vertical-align: top;
+  background-size: cover;
+  background-position: center;
+}
+
+#story_view ul.screens liscreen .choice {
+  margin-bottom: 5px;
+}
+
+#story_view ul.screens li.screen .choice input {
+  width: 265px;
+}
+
+#story_view ul.screens li.screen .choice select {
+  width: 50px;
+  border-width: 1px;
+}
+
+#story_view ul.screens li.screen .choice button,
+#story_view ul.screens li.screen .background button {
+  height: 24px;
+  border-radius: 0;
+}
+
+#story_view ul.screens div.screen {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  margin: 0 auto;
+  border: 1px solid #333;
+  background-size: cover;
+  background-position: center;
+}
+
+#story_view ul.screens div.screen .text {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.25);
+  color: #333;
+  text-shadow: 0 0 2px #fff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#story_view ul.screens div.screen .text .choices {
+  margin: 0;
+  padding-top: 5px;
+  padding-left: 20px;
+}
+
+#story_view ul.screens div.screen .choices .choice {
+  cursor: pointer;
+}
+
+#story_view ul.screens div.screen .choices .choice:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}

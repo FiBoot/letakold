@@ -1,10 +1,7 @@
 <?php
-
 include_once 'includes.php';
 
 class Ajax {
-
-  const TABLE = "fiboot_global";
 
   private $rep;
 
@@ -130,7 +127,7 @@ break;
   // Retourne le tableau recherché
   private function _list($data) {
     $query = new Query(EQueryCommand::SELECT, $data->type);
-    $query->set_order($data->orderby, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
+    $query->set_order($data->order, $data->asc ? EQueryOrder::ASC : EQueryOrder::DESC);
     $query->set_limit($data->limit);
     $res = $query->exec();
     return SQL::assoc_tab($res);

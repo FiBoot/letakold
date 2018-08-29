@@ -1,9 +1,24 @@
 <div class="container spaced">
 
-  <ajax-msg info="D.info"></ajax-msg>
-
   <a href="#/{{D.type}}/new">
     <button type="button" class="btn btn-success">New</button>
   </a>
+
+  <div class="vspaced"></div>
+
+  <ajax-msg info="D.info"></ajax-msg>
+
+  <table class="table unvisible" ng-class="{'visible': D.loaded}">
+    <tr>
+      <th>Nom</th>
+      <th>Auteur</th>
+      <th>Actions</th>
+    </tr>
+    <tr ng-repeat="item in D.list">
+      <td>{{item.name}}</td>
+      <td>{{item.account_id}}</td>
+      <td></td>
+    </tr>
+  </table>
 
 </div>
