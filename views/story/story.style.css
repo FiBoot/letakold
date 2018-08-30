@@ -1,37 +1,3 @@
-#story_view .cadre {
-  position: relative;
-  width: 600px;
-  height: 400px;
-  margin: 0 auto;
-  border: 1px solid #333;
-  background-size: cover;
-  background-position: center;
-}
-
-#story_view .cadre .text {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.25);
-  color: #333;
-  text-shadow: 0 0 2px #fff;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-#story_view .cadre .text .choices {
-  margin: 0;
-  padding-top: 5px;
-  padding-left: 20px;
-}
-#story_view .cadre .choices .choice {
-  cursor: pointer;
-}
-#story_view .cadre .choices .choice:hover {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
 #story_view ul {
   margin: 0;
   padding: 0;
@@ -50,38 +16,9 @@
   resize: vertical;
 }
 
-#story_view ul.screens li.screen {
-  display: inline-block;
-  width: 340px;
-  margin: 15px;
-  border: 1px solid #666;
-  border-radius: 4px;
-  background-color: #eee;
-  vertical-align: top;
-  background-size: cover;
-  background-position: center;
-}
+/* VIEW */
 
-#story_view ul.screens liscreen .choice {
-  margin-bottom: 5px;
-}
-
-#story_view ul.screens li.screen .choice input {
-  width: 265px;
-}
-
-#story_view ul.screens li.screen .choice select {
-  width: 50px;
-  border-width: 1px;
-}
-
-#story_view ul.screens li.screen .choice button,
-#story_view ul.screens li.screen .background button {
-  height: 24px;
-  border-radius: 0;
-}
-
-#story_view ul.screens div.screen {
+#story_view .view {
   position: relative;
   width: 600px;
   height: 400px;
@@ -91,7 +28,7 @@
   background-position: center;
 }
 
-#story_view ul.screens div.screen .text {
+#story_view .view .text {
   position: absolute;
   width: 100%;
   bottom: 0;
@@ -103,16 +40,46 @@
   font-size: 14px;
 }
 
-#story_view ul.screens div.screen .text .choices {
+#story_view .view .text .choices {
   margin: 0;
   padding-top: 5px;
   padding-left: 20px;
 }
-
-#story_view ul.screens div.screen .choices .choice {
+#story_view .view .choices .choice {
   cursor: pointer;
 }
-
-#story_view ul.screens div.screen .choices .choice:hover {
+#story_view .view .choices .choice:hover {
   background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* EDIT */
+
+#story_view ul.screens li.screen {
+  display: inline-block;
+  width: 300px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #666;
+  vertical-align: top;
+  background-size: cover;
+  background-position: center;
+}
+
+#story_view ul.screens liscreen .choice {
+  margin-bottom: 5px;
+}
+
+#story_view ul.screens li.screen .choice input {
+  width: 224px;
+}
+
+#story_view ul.screens li.screen .choice select {
+  width: 50px;
+  border-width: 1px;
+}
+
+#story_view ul.screens li.screen .choice button,
+#story_view ul.screens li.screen .background button {
+  height: 24px;
+  border-radius: 0;
 }

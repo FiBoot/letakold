@@ -61,7 +61,7 @@
       </td>
       <td>
         <div class="btn-group" role="group" aria-label="edition" ng-show="item.edit">
-          <ajax-btn class="btn-success" value="Save" on-click="save(E)"></ajax-btn>
+          <ajax-btn type="success" value="Save" on-click="save(E)"></ajax-btn>
           <button type="button" class="btn btn-default" title="edit" ng-click="item.edit=false">Cancel</button>
         </div>
         <div class="btn-group" role="group" aria-label="actions" ng-show="!item.edit">
@@ -90,7 +90,7 @@
         <input type="checkbox" ng-model="N.public">
       </td>
       <td>
-        <ajax-btn class="btn-success" info="info" value="Add" on-click="add(N)"></ajax-btn>
+        <ajax-btn type="success" info="info" value="Add" on-click="add(N)"></ajax-btn>
       </td>
     </tr>
   </table>

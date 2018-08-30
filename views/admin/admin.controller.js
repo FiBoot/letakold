@@ -36,7 +36,7 @@ angular.module('App').controller('adminCtrl', [
     }
 
     function actionItem(action, item) {
-      ajaxService.internalAjax(action, { item: item }, $scope.info, loadList);
+      ajaxService.internalAjax(action, { item: item }, $scope.info, loadData);
     }
 
     $scope.calcPagination = function calcPagination() {

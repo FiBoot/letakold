@@ -19,7 +19,7 @@ angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProv
     })
 
     // story
-    .when('/story/new', {
+    .when('/story', {
       controller: 'storyCtrl',
       templateUrl: 'views/story/story.view.html'
     })

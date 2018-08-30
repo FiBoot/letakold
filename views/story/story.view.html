@@ -3,93 +3,99 @@
   <!-- CONTROL -->
   <div class="row bvspaced">
     <div class="col-xs-12">
-      <button type="button" class="btn btn-info" ng-click="addScreen()">
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add screen</button>
-      <button type="button" class="btn btn-success" ng-click="saveStory()">
-        <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save story</button>
-      <input type="checkbox" ng-model="S.editmode" data-toggle="toggle" data-on="Edit" data-off="View" data-offstyle="primary">
+      <glyph-btn type="default" glyph="eye-open" value="View" ng-show="S.editmode" on-click="toggleEdit()"></glyph-btn>
+      <glyph-btn type="default" glyph="pencil" value="Edit" ng-show="!S.editmode" on-click="toggleEdit()"></glyph-btn>
     </div>
   </div>
 
   <!-- EDIT list -->
-  <ul class="screens row" ng-show="S.editmode">
-    <li class="screen" ng-repeat="screen in S.list" style="background-image: url({{screen.showbg ? screen.bg : ''}});">
+  <div class="vspaced" ng-show="S.editmode">
 
-      <!-- HEADER -->
-      <div class="row sspaced">
-        <div class="col-xs-7">
-          <h4>Screen {{screen.id}}</h4>
-        </div>
-        <div class="col-xs-5 text-right">
-          <button type="button" class="btn btn-xs btn-danger " ng-click="deleteScreen(screen)">
-            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
-        </div>
-      </div>
+    <ajax-btn type="success" info="D.info" glyph="floppy-disk" value="Save story" on-click="saveStory()"></ajax-btn>
+    <glyph-btn type="info" glyph="plus" value="Add screen" on-click="addScreen()"></glyph-btn>
 
-      <!-- TEXT -->
-      <div class="row vspaced">
-        <div class="col-xs-12">
-          <label for="text{{screen.id}}" class="shspaced">Text:</label>
-        </div>
-        <div class="col-xs-12">
-          <textarea ng-model="screen.text" id="text{{screen.id}}" resize="false"></textarea>
-        </div>
-      </div>
+    <ul class="screens row vspaced">
+      <li class="screen lightbg" ng-repeat="screen in S.list" style="background-image: url({{screen.showbg ? screen.bg : ''}});">
 
-      <!-- CHOICES -->
-      <div class="row vspaced">
-        <div class="col-xs-12">
-          <label class="shspaced">Choices:</label>
-          <ul class="choices">
-            <li ng-repeat="choice in screen.choices" class="choice mvspaced">
-              <div class="input-group">
-                <input type="text" ng-model="choice.text">
-                <select ng-model="choice.toId">
-                  <option ng-repeat="screen in S.list" ng-value="screen.id">{{screen.id}}</option>
-                </select>
-                <div class="input-group-btn">
-                  <button type="button" class="btn btn-danger btn-xs" ng-click="removeChoice(screen, choice)">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                  </button>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <div class="sspaced">
-            <button type="button" class="btn btn-success btn-xs" ng-click="addChoice(screen)">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add choice</button>
+        <!-- HEADER -->
+        <div class="row">
+          <div class="col-xs-9">
+            <h4 class="sm-hspaced">Screen {{screen.id}}</h4>
           </div>
-        </div>
-      </div>
-
-      <!-- BACKGROUND -->
-      <div class="row background vspaced">
-        <div class="col-xs-12">
-          <label for="bg{{screen.id}}" class="shspaced">Background url:</label>
-        </div>
-        <div class="col-xs-12">
-          <div class="input-group">
-            <input type="text" ng-model="screen.bg" id="bg{{screen.id}}" resize="false">
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-default btn-xs" ng-class="{'btn-info': screen.showbg}" ng-click="screen.showbg = !screen.showbg">
-                {{screen.showbg ? 'show' : 'hide'}}</button>
+          <div class="col-xs-3 text-right">
+            <div class="sm-spaced">
+              <glyph-btn type="danger" size="xs" glyph="remove" on-click="deleteScreen(screen)"></glyph-btn>
             </div>
           </div>
         </div>
-      </div>
 
-    </li>
-  </ul>
+        <!-- TEXT -->
+        <div class="row sm-vspaced">
+          <div class="col-xs-12">
+            <label for="text{{screen.id}}" class="sm-hspaced">Text:</label>
+          </div>
+          <div class="col-xs-12">
+            <textarea ng-model="screen.text" id="text{{screen.id}}" resize="false"></textarea>
+          </div>
+        </div>
 
-  <!-- VIEW  -->
-  <div class="screen" style="background-image: url({{S.selected.bg}});" ng-show="!S.editmode">
-    <div class="text" ng-show="S.selected">
-      <div class="phrase">{{S.selected.text}}</div>
-      <ul class="choices">
-        <li class="choice" ng-repeat="choice in S.selected.choices" ng-click="goTo(choice)">{{choice.text}}</li>
-      </ul>
-    </div>
+        <!-- CHOICES -->
+        <div class="row sm-vspaced">
+          <div class="col-xs-12">
+            <label class="sm-hspaced">Choices:</label>
+            <ul class="choices">
+              <li ng-repeat="choice in screen.choices" class="choice xs-vspaced">
+                <div class="input-group">
+                  <input type="text" ng-model="choice.text">
+                  <select ng-model="choice.toId">
+                    <option ng-repeat="screen in S.list" ng-value="screen.id">{{screen.id}}</option>
+                  </select>
+                  <glyph-btn type="default" size="xs" glyph="remove" on-click="removeChoice(screen, choice)"></glyph-btn>
+                </div>
+              </li>
+            </ul>
+            <glyph-btn type="success" size="xs" glyph="plus" value="Add choice" on-click="addChoice(screen)"></glyph-btn>
+          </div>
+        </div>
+
+        <!-- BACKGROUND -->
+        <div class="row background sm-vspaced">
+          <div class="col-xs-12">
+            <label for="bg{{screen.id}}" class="sm-hspaced">Background url:</label>
+          </div>
+          <div class="col-xs-12">
+            <div class="input-group">
+              <input type="text" ng-model="screen.bg" id="bg{{screen.id}}" resize="false">
+              <div class="input-group-btn">
+                <button type="button" class="btn btn-default btn-xs" ng-class="{'btn-info': screen.showbg}" ng-click="screen.showbg = !screen.showbg">
+                  {{screen.showbg ? 'show' : 'hide'}}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </li>
+    </ul>
+
   </div>
 
+
+  <!-- VIEW  -->
+  <div class="vspaced" ng-show="!S.editmode">
+
+    <glyph-btn type="info" glyph="repeat" value="Reset" on-click="reset()"></glyph-btn>
+
+    <div class="vspaced"></div>
+
+    <div class="view" style="background-image: url({{S.selected.bg}});">
+      <div class="text" ng-show="S.selected">
+        <div class="phrase">{{S.selected.text}}</div>
+        <ul class="choices">
+          <li class="choice" ng-repeat="choice in S.selected.choices" ng-click="goTo(choice)">{{choice.text}}</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
 
 </div>

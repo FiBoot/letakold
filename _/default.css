@@ -9,8 +9,15 @@ html, body {
   margin-top: 50px;
 }
 
-.centered	    { text-align: center; }
-.unvisible	  { visibility: hidden; }
+.margin-center {
+  margin: 0 auto;
+}
+.centered {
+  text-align: center;
+}
+.unvisible {
+  visibility: hidden;
+}
 .unvisible.visible	{
   visibility: visible;
 }
@@ -25,18 +32,18 @@ html, body {
 }
 
 /* SPACE */
-.spaced	      { padding: 8px; }
-.bigspaced	  { padding: 20px; }
-.smallspaced	{ padding: 5px; }
-.minispaced	  { padding: 2px; }
-.hspaced	    { padding: 0 8px; }
-.bighspaced	  { padding: 0 20px; }
-.smallhspaced	{ padding: 0 5px; }
-.minihspaced	{ padding: 0 2px; }
-.vspaced	    { padding: 8px 0; }
-.bigvspaced	  { padding: 20px 0; }
-.smallvspaced	{ padding: 5px 0; }
-.minivspaced	{ padding: 2px 0; }
+.spaced	      { padding: 8px !important; }
+.lg-spaced	  { padding: 20px !important; }
+.sm-spaced	  { padding: 5px !important; }
+.xs-spaced	  { padding: 2px !important; }
+.hspaced	    { padding: 0 8px !important; }
+.lg-hspaced	  { padding: 0 20px !important; }
+.sm-hspaced	  { padding: 0 5px !important; }
+.xs-hspaced	  { padding: 0 2px !important; }
+.vspaced	    { padding: 8px 0 !important; }
+.lg-vspaced	  { padding: 20px 0 !important; }
+.sm-vspaced	  { padding: 5px 0 !important; }
+.xs-vspaced	  { padding: 2px 0 !important; }
 /* F-COLOR */
 .dark	        { color: #111; }
 .darkgrey	    { color: #333; }

@@ -1,4 +1,4 @@
-function ajaxBtnController($scope, $element, $attrs) {
+function glyphBtnController($scope, $element, $attrs) {
   let ctrl = this;
 
   this.$onInit = function onInit() {};
@@ -9,13 +9,13 @@ function ajaxBtnController($scope, $element, $attrs) {
   };
 }
 
-angular.module('App').component('ajaxBtn', {
-  templateUrl: 'components/ajaxBtn/ajaxBtn.template.html',
-  controller: ajaxBtnController,
+angular.module('App').component('glyphBtn', {
+  templateUrl: 'components/glyphBtn/glyphBtn.template.html',
+  controller: glyphBtnController,
   bindings: {
-    info: '<',
     type: '@',
     glyph: '@',
+    size: '@',
     value: '@',
     onClick: '&'
   }

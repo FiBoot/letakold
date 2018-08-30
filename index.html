@@ -9,7 +9,6 @@
 	<!-- <link rel="icon" type="image/png" href="ressources/images/icon.png" /> -->
 	<link rel="stylesheet" href="_/default.css">
 	<link rel="stylesheet" href="_/bootstrap/bootstrap.min.css">
-	<link rel="stylesheet" href="_/bootstrap/bootstrap-toggle.min.css">
 	<!-- views -->
 	<link rel="stylesheet" href="views/story/story.style.css">
 </head>
@@ -39,12 +38,12 @@
 						<form class="form-inline" on-submit="connect()">
 							<input type="text" class="form-control" ng-model="Login.username" placeholder="username">
 							<input type="password" class="form-control" ng-model="Login.password" placeholder="password">
-							<ajax-btn info="Login.info" value="Login" on-click="connect()"></ajax-btn>
+							<ajax-btn info="Login.info" type="default" glyph="log-in" value="Login" on-click="connect()"></ajax-btn>
 						</form>
 					</div>
 					<div class="vspaced" ng-show="User.connected">
-						<span class="light">{{User.name}}</span>
-						<ajax-btn info="Login.info" value="Logout" class="btn-danger" on-click="disconnect()"></ajax-btn>
+						<glyph-btn type="default" glyph="cog" value="{{User.name}}"></glyph-btn>
+						<ajax-btn info="Login.info" type="danger" glyph="off" value="Logout" on-click="disconnect()"></ajax-btn>
 					</div>
 				</div>
 			</div>
@@ -59,7 +58,6 @@
 	<script type="text/javascript" src="_/angular/angular-route.min.js"></script>
 	<script type="text/javascript" src="_/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="_/bootstrap/bootstrap.min.js"></script>
-	<script type="text/javascript" src="_/bootstrap/bootstrap-toggle.min.js"></script>
 	<script type="text/javascript" src="_/default.js"></script>
 	<!-- classes -->
 	<script type="text/javascript" src="classes/ajaxInfo.class.js"></script>
@@ -71,6 +69,7 @@
 	<script type="text/javascript" src="services/ajax.service.js"></script>
 	<!-- components -->
 	<script type="text/javascript" src="components/ajaxBtn/ajaxBtn.component.js"></script>
+	<script type="text/javascript" src="components/glyphBtn/glyphBtn.component.js"></script>
 	<script type="text/javascript" src="components/ajaxMsg/ajaxMsg.component.js"></script>
 	<!-- views -->
 	<script type="text/javascript" src="views/admin/admin.controller.js"></script>

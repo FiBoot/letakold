@@ -4,6 +4,8 @@ angular.module('App').controller('storyCtrl', [
   '$routeParams',
   'ajaxService',
   function($scope, $rootScope, $routeParams, ajaxService) {
+    let gId = 1;
+
     class Choice {
       constructor(text, toId) {
         this.text = text;
@@ -21,11 +23,8 @@ angular.module('App').controller('storyCtrl', [
       }
     }
 
-    let gId = 1;
-    // const json = `[{"id":1,"text":"Screen 1","choices":[{"text":"go 2","toId":2},{"text":"go 3","toId":3}],"bg":"bg/1.png","showbg":true},{"id":2,"text":"Screen 2","choices":[{"text":"back","toId":1},{"text":"go 3","toId":3}],"bg":"","showbg":false},{"id":3,"text":"Screen 3","choices":[{"text":"go 4","toId":4}],"bg":"","showbg":false},{"id":4,"text":"End","choices":[],"bg":"bg/4.png","showbg":true}]`;
-    const json = `[{"id":1,"text":"bienvenue toussa","choices":[{"text":"choix n° 1","toId":1}],"bg":"","showbg":true}]`;
-
-    $scope.S = {
+    $scope.D = {
+      info: new AjaxInfo(),
       loaded: false,
       story: null
     };
@@ -37,8 +36,8 @@ angular.module('App').controller('storyCtrl', [
 
     $scope.addScreen = function addScreen() {
       const choice = new Choice('choix', null);
-      $scope.S.list.push(new Screen(gId, `Screen ${gId}`, [choice], ''));
       gId += 1;
+      $scope.S.list.push(new Screen(gId, `Screen ${gId}`, [choice], ''));
       choice.toId = $scope.S.list[0].id;
     };
 
@@ -63,7 +62,18 @@ angular.module('App').controller('storyCtrl', [
     };
 
     $scope.saveStory = function saveStory() {
-      console.log(angular.toJson($scope.S.list));
+      const data = angular.toJson($scope.S.list);
+      console.warn(`${data}`);
+      return;
+      $scope.D.story.data = `{"json": ${data}}`;
+      ajaxService.internalAjax(
+        $scope.D.story.id ? 'save' : 'new',
+        { item: $scope.D.story },
+        $scope.D.info,
+        response => {
+          console.log(response);
+        }
+      );
     };
 
     $scope.goTo = function goTo(choice) {
@@ -75,16 +85,46 @@ angular.module('App').controller('storyCtrl', [
       }
     };
 
+    $scope.toggleEdit = function toggleEdit() {
+      $scope.S.editmode = !$scope.S.editmode;
+      if (!$scope.S.editmode) {
+        $scope.reset();
+      }
+    };
+
+    $scope.reset = function reset() {
+      $scope.S.selected = $scope.S.list[0];
+    };
+
+    function loadStory(id, cb) {
+      const options = {
+        type: 'story',
+        id: id
+      };
+      ajaxService.internalAjax('get', options, $scope.D.info, response => {
+        if (response.status) {
+          cb(response.data);
+        } else {
+          // TODO: redirect
+        }
+      });
+    }
+
     function init() {
-      // TODO ajax load?
-      if (json) {
-        const data = JSON.parse(json);
-        data.forEach(screen => {
-          let choices = [];
-          screen.choices.forEach(choice => choices.push(new Choice(choice.text, choice.toId)));
-          $scope.S.list.push(new Screen(screen.id, screen.text, choices, screen.bg));
+      $scope.D.loaded = false;
+      if ($routeParams.hasOwnProperty('id')) {
+        loadStory($routeParams.id, story => {
+          story.parseData();
+          console.log(story);
+          story.data.forEach(screen => {
+            let choices = [];
+            screen.choices.forEach(choice => choices.push(new Choice(choice.text, choice.toId)));
+            $scope.S.list.push(new Screen(screen.id, screen.text, choices, screen.bg));
+          });
+          $scope.reset();
+          $scope.D.story = story;
+          $scope.D.loaded = true;
         });
-        $scope.S.loaded = true;
       }
     }
     init();
