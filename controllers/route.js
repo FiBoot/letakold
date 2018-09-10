@@ -1,6 +1,9 @@
 angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix('');
 
+  // TODO
+  // controller array
+
   $routeProvider
     // index
     .when('/', {
@@ -27,5 +30,12 @@ angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProv
       controller: 'storyCtrl',
       templateUrl: 'views/story/story.view.html'
     })
+
+    //timeline
+    .when('/timeline', {
+      controller: 'timelineCtrl',
+      templateUrl: 'views/timeline/timeline.view.html'
+    })
+
     .otherwise({ redirectTo: '/' });
 });

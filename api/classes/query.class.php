@@ -80,6 +80,14 @@ class Query {
     $this->force = true;
   }
 
+  private function get_inner_fields($table = 'main') {
+    return "$table.id, $table.account_id, $table.name, $table.data, $table.type, $table.creation_date, $table.last_update, $table.public";
+  }
+
+  private function get_inner_join($table = 'main') {
+    return "INNER JOIN `". self::TABLE ."` AS `user` ON $table.account_id = user.id";
+  }
+
   public function add_param($field, $comparator, $value) {
     $param = new QueryParam($field, $comparator, $value);
     array_push($this->params, $param);

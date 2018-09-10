@@ -25,8 +25,9 @@ angular.module('App').controller('mainCtrl', [
       ajaxService.internalAjax('autoconnect', null, $scope.Login.info, connection);
     });
 
-    $scope.User = {
+    $rootScope.User = {
       connected: false,
+      id: 0,
       name: ''
     };
 
@@ -38,8 +39,9 @@ angular.module('App').controller('mainCtrl', [
 
     function connection(response) {
       if (response.status) {
-        $scope.User.name = response.data.name;
-        $scope.User.connected = true;
+        $rootScope.User.id = response.data.id;
+        $rootScope.User.name = response.data.name;
+        $rootScope.User.connected = true;
         $scope.$broadcast('connected');
         $rootScope.apply();
       }
@@ -52,7 +54,7 @@ angular.module('App').controller('mainCtrl', [
     $scope.disconnect = function disconnect() {
       ajaxService.internalAjax('disconnect', null, $scope.Login.info, response => {
         if (response.status) {
-          $scope.User.connected = false;
+          $rootScope.User.connected = false;
           $scope.$broadcast('disconnected');
           $rootScope.apply();
         }

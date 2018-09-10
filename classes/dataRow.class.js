@@ -13,6 +13,12 @@ class DataRow {
     this.public = json.public ? json.public : false;
   }
 
+  getDate(creation) {
+    return creation
+      ? this.creation_date.toLocaleString()
+      : this.last_update.toLocaleString();
+  }
+
   parseData() {
     try {
       this.data =

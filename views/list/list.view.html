@@ -12,12 +12,17 @@
     <tr>
       <th>Nom</th>
       <th>Auteur</th>
+      <th>Dernière Maj</th>
       <th>Actions</th>
     </tr>
     <tr ng-repeat="item in D.list">
       <td>{{item.name}}</td>
       <td>{{item.account_id}}</td>
-      <td></td>
+      <td>{{item.getDate()}}</td>
+      <td>
+        <glyph-btn type="info" glyph="search" value="Voir"></glyph-btn>
+        <glyph-btn type="danger" glyph="pencil" value="Editer" ng-show="canEdit(item)"></glyph-btn>
+      </td>
     </tr>
   </table>
 

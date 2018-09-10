@@ -25,6 +25,10 @@ angular.module('App').controller('listCtrl', [
       });
     }
 
+    $scope.canEdit = function canEdit(item) {
+      return $rootScope.User.connected && item.account_id === $rootScope.User.id;
+    };
+
     $scope.$on('connected', loadData);
     $scope.$on('disconnected', loadData);
     loadData();
