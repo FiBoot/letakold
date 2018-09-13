@@ -30,6 +30,10 @@ angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProv
       controller: 'storyCtrl',
       templateUrl: 'views/story/story.view.html'
     })
+    .when('/story/edit/:id', {
+      controller: 'storyCtrl',
+      templateUrl: 'views/story/story.view.html'
+    })
 
     //timeline
     .when('/timeline', {

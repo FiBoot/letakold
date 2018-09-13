@@ -35,16 +35,16 @@ class Data {
   }
 
   public function insert_query() {
-    $fields = "main.`account_id`, main.`name`, main.`data`, main.`type`, main.`creation_date`, main.`last_update`, main.`public`";
+    $fields = "`account_id`, `name`, `data`, `type`, `creation_date`, `last_update`, `public`";
     $values = "$this->account_id, '".$this->quote_slashes($this->name)."', '".$this->encode_data()."', '$this->type', '$this->creation_date', '$this->last_update', $this->public";
-    return "(main.$fields) VALUES ($values)";
+    return "($fields) VALUES ($values)";
   }
 
   public function update_query() {
     $name = addslashes($this->name);
     $data = $this->encode_data();
     $now = date('Y-m-d G:i:s');
-    return "main.`name` = '$name', main.`data` = '$data', main.`last_update` = '$now', main.`public` = '$this->public'";
+    return "`name` = '$name', `data` = '$data', `last_update` = '$now', `public` = '$this->public'";
   }
 
 }

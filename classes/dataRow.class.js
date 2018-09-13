@@ -11,7 +11,7 @@ class DataRow {
     this.type = json.type ? `${json.type}` : ``;
     this.creation_date = json.creation_date ? new Date(json.creation_date) : new Date();
     this.last_update = json.last_update ? new Date(json.last_update) : new Date();
-    this.public = json.public ? json.public : false;
+    this.public = (parseInt(json.public) > 0) ? true : false;
   }
 
   getDate(creation) {

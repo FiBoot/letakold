@@ -1,11 +1,28 @@
 <div class="container spaced" id="story_view">
 
+  <back-btn type="story"></back-btn>
+
   <!-- CONTROL -->
-  <div class="row bvspaced">
+  <div class="vspaced">
+    <ajax-msg info="D.info"></ajax-msg>
+  </div>
+
+  <div class="row vspaced">
     <div class="col-xs-12">
-      <glyph-btn type="warning" glyph="pencil" value="Edit" ng-show="!S.editmode" on-click="toggleEdit()"></glyph-btn>
-      <glyph-btn type="info" glyph="eye-open" value="View" ng-show="S.editmode" on-click="toggleEdit()"></glyph-btn>
-      <ajax-btn type="success" info="D.info" glyph="floppy-disk" value="Save story" on-click="saveStory()"></ajax-btn>
+      <div class="col-sm-4 sm-vspaced">
+        <glyph-btn type="warning" glyph="pencil" value="Edition" ng-show="!S.editmode" on-click="toggleEdit()"></glyph-btn>
+        <glyph-btn type="info" glyph="eye-open" value="Visualisation" ng-show="S.editmode" on-click="toggleEdit()"></glyph-btn>
+        <ajax-btn type="success" info="D.info" glyph="floppy-disk" value="Enregistrer" on-click="saveStory()"></ajax-btn>
+      </div>
+      <div class="col-sm-8 sm-vspaced">
+        <div class="input-group">
+          <input type="text" class="form-control" ng-model="D.story.name" placeholder="Nom">
+          <span class="input-group-addon">
+            <span>Public :</span>
+            <input type="checkbox" class="form-control" ng-model="D.story.public">
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -20,7 +37,7 @@
         <!-- HEADER -->
         <div class="row">
           <div class="col-xs-9">
-            <h4 class="sm-hspaced">Screen #{{screen.id}}</h4>
+            <h4 class="sm-hspaced">Ecran #{{screen.id}}</h4>
           </div>
           <div class="col-xs-3 text-right">
             <div class="sm-spaced">
@@ -42,13 +59,13 @@
         <!-- CHOICES -->
         <div class="row sm-vspaced">
           <div class="col-xs-12">
-            <label class="sm-hspaced">Choices:</label>
+            <label class="sm-hspaced">Choix:</label>
             <ul class="choices">
               <li ng-repeat="choice in screen.choices" class="choice xs-vspaced">
                 <div class="input-group">
                   <input type="text" ng-model="choice.text">
                   <select ng-model="choice.toId">
-                    <option ng-repeat="screen in S.list" ng-value="screen.id">{{screen.id}}</option>
+                    <option ng-repeat="c in S.list" ng-value="c.id" ng-show="c.id !== screen.id">{{c.id}}</option>
                   </select>
                   <glyph-btn type="default" size="xs" glyph="remove" on-click="removeChoice(screen, choice)"></glyph-btn>
                 </div>
@@ -61,7 +78,7 @@
         <!-- BACKGROUND -->
         <div class="row background sm-vspaced">
           <div class="col-xs-12">
-            <label for="bg{{screen.id}}" class="sm-hspaced">Background url:</label>
+            <label for="bg{{screen.id}}" class="sm-hspaced">Lien du fond:</label>
           </div>
           <div class="col-xs-12">
             <div class="input-group">
@@ -84,6 +101,8 @@
   <div class="vspaced" ng-show="!S.editmode">
 
     <glyph-btn type="default" glyph="repeat" value="Reset" on-click="reset()"></glyph-btn>
+
+    <h3>> {{D.story.name}}</h3>
 
     <div class="vspaced"></div>
 

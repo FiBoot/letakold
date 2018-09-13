@@ -2,9 +2,9 @@ angular.module('App').controller('storyCtrl', [
   '$scope',
   '$rootScope',
   '$routeParams',
+  '$location',
   'ajaxService',
-  function($scope, $rootScope, $routeParams, ajaxService) {
-
+  function($scope, $rootScope, $routeParams, $location, ajaxService) {
     class Choice {
       constructor(text, toId) {
         this.text = text;
@@ -23,7 +23,7 @@ angular.module('App').controller('storyCtrl', [
     }
 
     $scope.D = {
-      gId: 1,
+      gId: 0,
       info: new AjaxInfo(),
       loaded: false,
       story: null
@@ -33,6 +33,7 @@ angular.module('App').controller('storyCtrl', [
       list: [],
       selected: null
     };
+    $scope.U = $rootScope.User;
 
     $scope.addScreen = function addScreen() {
       const choice = new Choice('choix', null);
@@ -69,7 +70,9 @@ angular.module('App').controller('storyCtrl', [
         { item: $scope.D.story },
         $scope.D.info,
         response => {
-          console.log(response);
+          if (response.status && response.data) {
+            $location.path(`/story/${response.data.id}`);
+          }
         }
       );
     };
@@ -94,36 +97,38 @@ angular.module('App').controller('storyCtrl', [
       $scope.S.selected = $scope.S.list[0];
     };
 
+    function parseData(story) {
+      story.parseData();
+      story.data.forEach(screen => {
+        let choices = [];
+        screen.choices.forEach(choice => choices.push(new Choice(choice.text, choice.toId)));
+        $scope.S.list.push(new Screen(screen.id, screen.text, choices, screen.bg));
+        $scope.D.gId = screen.id > $scope.D.gId ? screen.id : $scope.D.gId;
+      });
+      $scope.reset();
+      $scope.D.story = story;
+      $scope.D.loaded = true;
+      $rootScope.apply();
+    }
+
     function loadStory(id, cb) {
-      const options = {
-        type: 'story',
-        id: id
-      };
-      ajaxService.internalAjax('get', options, $scope.D.info, response => {
+      ajaxService.internalAjax('get', { type: 'story', id: id }, $scope.D.info, response => {
         if (response.status) {
           cb(response.data);
         } else {
-          // TODO: redirect
+          $location.path('/story');
         }
       });
     }
 
     function init() {
       $scope.D.loaded = false;
+      $scope.D.story = new DataRow({
+        account_id: $rootScope.User.id,
+        type: 'story'
+      });
       if ($routeParams.hasOwnProperty('id')) {
-        loadStory($routeParams.id, story => {
-          story.parseData();
-          story.data.forEach(screen => {
-            let choices = [];
-            screen.choices.forEach(choice => choices.push(new Choice(choice.text, choice.toId)));
-            $scope.S.list.push(new Screen(screen.id, screen.text, choices, screen.bg));
-            $scope.D.gId = screen.id > $scope.D.gId ? screen.id : $scope.D.gId;
-          });
-          $scope.reset();
-          $scope.D.story = story;
-          $scope.D.loaded = true;
-          $rootScope.apply();
-        });
+        loadStory($routeParams.id, parseData);
       }
     }
     init();

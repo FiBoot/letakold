@@ -14,17 +14,6 @@ angular.module('App').controller('mainCtrl', [
 
     $scope.Loaded = false;
 
-    $(document).ready(function() {
-      setTimeout(function() {
-        $scope.Loaded = true;
-        $scope.$broadcast('loaded');
-        console.log('broadcasting');
-        $rootScope.apply();
-      }, $rootScope.TIMESPAN);
-
-      ajaxService.internalAjax('autoconnect', null, $scope.Login.info, connection);
-    });
-
     $rootScope.User = {
       connected: false,
       id: 0,
@@ -60,5 +49,17 @@ angular.module('App').controller('mainCtrl', [
         }
       });
     };
+
+    $(document).ready(function() {
+      setTimeout(function() {
+        $scope.Loaded = true;
+        $scope.$broadcast('loaded');
+        console.log('broadcasting');
+        $rootScope.apply();
+      }, $rootScope.TIMESPAN);
+
+      ajaxService.internalAjax('autoconnect', null, $scope.Login.info, connection);
+    });
+
   }
 ]);

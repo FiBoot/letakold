@@ -6,7 +6,7 @@ class USER {
 
   public static function connect($username, $password) {
     $query = new Query(EQueryCommand::SELECT, 'account');
-    $query->add_param('name', EComparator::EQUAL, $username);
+    $query->add_param('name', EComparator::EQUAL, $username, "main");
     $query->force();
     $res = $query->exec();
 

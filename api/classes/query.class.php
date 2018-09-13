@@ -26,9 +26,10 @@ class QueryParam {
   public $key;
   private $param;
 
-  function __construct($key, $comparator = EComparator::EQUAL, $value) {
+  function __construct($key, $comparator = EComparator::EQUAL, $value, $table_name = "") {
     $this->key = $key;
-    $this->param = "main.`$key` $comparator '". addslashes($value) ."'";
+    $table_name = $table_name ? "$table_name." : "";
+    $this->param = "$table_name`$key` $comparator '". addslashes($value) ."'";
   }
 
   function or_query($query_param) {
@@ -40,16 +41,6 @@ class QueryParam {
   }
 }
 
-class KeyValue {
-  public $key;
-  public $value;
-  function __construct($key, $value) {
-    $this->key = $key;
-    $this->value = $value;
-  }
-}
-
-
 class Query {
 
   const TABLE = "fiboot_global";
@@ -59,7 +50,6 @@ class Query {
   private $type;
   private $params;
   private $keyvalues;
-  private $item;
   private $order;
   private $limit;
 
@@ -70,7 +60,6 @@ class Query {
     $this->command = $command;
     $this->type = $type;
     $this->params = array();
-    $this->item = null;
     $this->order = "";
     $this->limit = "";
   }
@@ -80,40 +69,33 @@ class Query {
     $this->force = true;
   }
 
-  private function get_table($table_name = "main") {
+  private function get_table($table_name = "") {
     $table = self::TABLE;
-    return "`$table` `$table_name`";
+    return "`$table` $table_name";
   }
 
-  private function get_inner_fields() {
+  private function get_inner_fields($table_name = "") {
+    $table_name = $table_name ? "$table_name." : "";
     $fields = "user.name as owner";
     foreach (array("id", "account_id", "name", "data", "type", "creation_date", "last_update", "public") as $field) {
-      $fields .= ", main.$field";
+      $fields .= ", $table_name$field";
     }
     return $fields;
   }
 
-  private function get_inner_join() {
+  private function get_inner_join($table_name = "") {
+    $table_name = $table_name ? "$table_name." : "";
     $table = $this->get_table("user");
-    return "LEFT JOIN $table ON main.account_id = user.id";
+    return "LEFT JOIN $table ON $table_name`account_id` = user.id";
   }
 
-  public function add_param($field, $comparator, $value) {
-    $param = new QueryParam($field, $comparator, $value);
+  public function add_param($field, $comparator, $value, $table_name = "") {
+    $param = new QueryParam($field, $comparator, $value, $table_name);
     array_push($this->params, $param);
   }
 
   public function add_query_param($query_param) {
     array_push($this->params, $query_param);
-  }
-
-  public function add_keyvalue($key, $value) {
-    $keyvalue = new KeyValue($key, $value);
-    array_push($this->keyvalues, $keyvalue);
-  }
-
-  public function set_item($item) {
-    $this->item = $item;
   }
 
   public function set_order($field, $order = EQueryOrder::ASC) {
@@ -137,57 +119,39 @@ class Query {
     return (count($qp) > 0) ? $qp : "true";
   }
 
-  private function add_public_param($user) {
+  private function add_public_param($user, $table_name = "") {
     if (!($this->force || $user->data->admin)) {
-      $public_param = new QueryParam('public', EComparator::EQUAL, 1);
+      $public_param = new QueryParam('public', EComparator::EQUAL, 1, $table_name);
       if ($user) {
-        $user_param = new QueryParam('account_id', EComparator::EQUAL, $user->id);
+        $user_param = new QueryParam('account_id', EComparator::EQUAL, $user->id, $table_name);
         $public_param->or_query($user_param);
       }
       $this->add_query_param($public_param);
     }
   }
 
-  private function add_private_param($user) {
+  private function add_private_param($user, $table_name = "") {
     if (!($this->force || $user->data->admin)) {
-      $this->add_param("account_id", EComparator::EQUAL, $user->id);
+      $this->add_param("account_id", EComparator::EQUAL, $user->id, $table_name);
     }
   }
-
-  private function build_insert_keyvalue() {
-    $qkv = (object)array("keys" => "", "values" => "");
-    foreach ($this->keyvalues as $key => $kv) {
-      $qkv->keys .= ($key > 0 ? ", " : "") . "`$kv->key`";
-      $qkv->values .= ($key > 0 ? ", " : "") . "'". addslashes($kv->value) ."'";
-    }
-    return $qkv;
-  }
-
-  private function build_update_keyvalue() {
-    $qkv = "";
-    foreach ($this->keyvalues as $key => $kv) {
-      $qp = new QueryParam($kv->key, EComparator::EQUAL, $kv->value);
-      $qkv .= ($key > 0 ? ", " : "") . $qp->get();
-    }
-    return $qkv;
-  }
-
 
   public function exec($item = null) {
-    if ($this->type) {
-      $this->add_param('type', EComparator::EQUAL, $this->type);
-    }
-
+    $table_name = "main";
     $user = USER::get();
     $query = null;
+
+    if ($this->type) {
+      $this->add_param('type', EComparator::EQUAL, $this->type, $table_name);
+    }
 
     switch ($this->command) {
 
       case EQueryCommand::SELECT:
-        $this->add_public_param($user);
-        $table = $this->get_table();
-        $fields = $this->get_inner_fields();
-        $join = $this->get_inner_join();
+        $this->add_public_param($user, $table_name);
+        $table = $this->get_table($table_name);
+        $fields = $this->get_inner_fields($table_name);
+        $join = $this->get_inner_join($table_name);
         $query_params = $this->get_query_params();
         $where = $query_params ? "WHERE $query_params" : "";
         $query = rtrim("SELECT $fields FROM $table $join $where $this->order $this->limit");

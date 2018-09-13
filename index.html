@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="_/default.css">
 	<link rel="stylesheet" href="_/bootstrap/bootstrap.min.css">
 	<link rel="stylesheet" href="_/vis/vis.min.css">
-	<!-- views -->
+	<!-- VIEW CSSs -->
 	<link rel="stylesheet" href="views/story/story.style.css">
 </head>
 
@@ -23,10 +23,9 @@
 	<div class="unvisible" ng-class="{'visible': Loaded}">
 
 		<nav class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container">
+			<div class="container-fluid">
 				<div class="navbar-header">
-					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
-					 aria-controls="navbar">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-controls="navbar">
 						<span class="sr-only">Toggle navigation</span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
@@ -34,17 +33,25 @@
 					</button>
 					<a class="navbar-brand" href="#/">Letakol.FiBoot</a>
 				</div>
-				<div class="navbar-right collapse navbar-collapse">
-					<div class="vspaced" ng-show="!User.connected">
-						<form class="form-inline" on-submit="connect()">
-							<input type="text" class="form-control" ng-model="Login.username" placeholder="username">
-							<input type="password" class="form-control" ng-model="Login.password" placeholder="password">
-							<ajax-btn info="Login.info" type="default" glyph="log-in" value="Login" on-click="connect()"></ajax-btn>
-						</form>
-					</div>
-					<div class="vspaced" ng-show="User.connected">
-						<glyph-btn type="default" glyph="cog" value="{{User.name}}"></glyph-btn>
-						<ajax-btn info="Login.info" type="danger" glyph="off" value="Logout" on-click="disconnect()"></ajax-btn>
+				<div id="navbar" class="navbar-collapse collapse" aria-expanded="true">
+					<div class="nav navbar-nav navbar-right lg-hspaced">
+						<div class="vspaced" ng-show="!User.connected">
+							<form class="form-inline" on-submit="connect()">
+								<div class="inline-block xs-vspaced">
+									<input type="text" class="form-control" ng-model="Login.username" placeholder="username">
+								</div>
+								<div class="inline-block xs-vspaced">
+									<input type="password" class="form-control" ng-model="Login.password" placeholder="password">
+								</div>
+								<div class="inline-block xs-vspaced">
+									<ajax-btn info="Login.info" type="info" glyph="log-in" value="Login" on-click="connect()"></ajax-btn>
+								</div>
+							</form>
+						</div>
+						<div class="vspaced" ng-show="User.connected">
+							<glyph-btn type="default" glyph="cog" value="{{User.name}}"></glyph-btn>
+							<ajax-btn info="Login.info" type="danger" glyph="log-out" value="Logout" on-click="disconnect()"></ajax-btn>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -54,26 +61,27 @@
 
 	</div>
 
-	<!-- lib -->
+	<!-- BASE LIBS -->
 	<script type="text/javascript" src="_/angular/angular.min.js"></script>
 	<script type="text/javascript" src="_/angular/angular-route.min.js"></script>
 	<script type="text/javascript" src="_/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="_/bootstrap/bootstrap.min.js"></script>
 	<script type="text/javascript" src="_/vis/vis.min.js"></script>
 	<script type="text/javascript" src="_/default.js"></script>
-	<!-- classes -->
+	<!-- CLASSES -->
 	<script type="text/javascript" src="classes/ajaxInfo.class.js"></script>
 	<script type="text/javascript" src="classes/dataRow.class.js"></script>
-	<!-- main controllers -->
+	<!-- MAIN CONTROLLERS -->
 	<script type="text/javascript" src="controllers/route.js"></script>
 	<script type="text/javascript" src="controllers/main.controller.js"></script>
-	<!-- services -->
+	<!-- SERVICES -->
 	<script type="text/javascript" src="services/ajax.service.js"></script>
-	<!-- components -->
+	<!-- COMPONENTS -->
 	<script type="text/javascript" src="components/ajaxBtn/ajaxBtn.component.js"></script>
 	<script type="text/javascript" src="components/glyphBtn/glyphBtn.component.js"></script>
 	<script type="text/javascript" src="components/ajaxMsg/ajaxMsg.component.js"></script>
-	<!-- views -->
+	<script type="text/javascript" src="components/backBtn/backBtn.component.js"></script>
+	<!-- VIEWS -->
 	<script type="text/javascript" src="views/admin/admin.controller.js"></script>
 	<script type="text/javascript" src="views/default/default.controller.js"></script>
 	<script type="text/javascript" src="views/list/list.controller.js"></script>

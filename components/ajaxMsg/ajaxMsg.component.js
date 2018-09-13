@@ -1,21 +1,15 @@
-function ajaxMessageController($scope, $element, $attrs) {
+function ajaxMessageController($scope, $rootScope) {
   var ctrl = this;
-  ctrl.display = true;
-
-  this.$onInit = function onInit() {};
-  this.$onChanges = function onChanges(changesObj) {
-    ctrl.display = true;
-  };
 
   ctrl.click = function click() {
-    ctrl.display = false;
+    ctrl.info.message = null;
+    $rootScope.apply();
   };
 }
-
 angular.module('App').component('ajaxMsg', {
   templateUrl: 'components/ajaxMsg/ajaxMsg.template.html',
-  controller: ajaxMessageController,
+  controller: ['$scope', '$rootScope', ajaxMessageController],
   bindings: {
-    info: '<'
+    info: '='
   }
 });

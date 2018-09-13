@@ -113,7 +113,7 @@ class Ajax {
   private function _get($data) {
     if ($data->id) {
       $query = new Query(EQueryCommand::SELECT, $data->type);
-      $query->add_param('id', EComparator::EQUAL, $data->id);
+      $query->add_param('id', EComparator::EQUAL, $data->id, "main");
       $res = $query->exec();
       if (SQL::row_number($res) === 1) {
         return SQL::fetch_assoc($res);

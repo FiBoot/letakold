@@ -1,8 +1,6 @@
 <div class="container spaced">
 
-  <a href="#/{{D.type}}/new">
-    <button type="button" class="btn btn-success">New</button>
-  </a>
+  <glyph-btn type="success" glyph="plus" value="Créer {{D.type}}" ng-click="create()"></glyph-btn>
 
   <div class="vspaced"></div>
 
@@ -12,16 +10,16 @@
     <tr>
       <th>Nom</th>
       <th>Auteur</th>
-      <th>Dernière Maj</th>
-      <th>Actions</th>
+      <th class="text-right">Dernière Maj</th>
+      <th class="text-right">Actions</th>
     </tr>
-    <tr ng-repeat="item in D.list">
+    <tr class="highlighted" ng-repeat="item in D.list" ng-click="goTo(item)">
       <td>{{item.name}}</td>
-      <td>{{item.username}}</td>
-      <td>{{item.getDate()}}</td>
-      <td>
-        <glyph-btn type="info" glyph="search" value="Voir"></glyph-btn>
-        <glyph-btn type="danger" glyph="pencil" value="Editer" ng-show="canEdit(item)"></glyph-btn>
+      <td>{{item.owner}}</td>
+      <td class="text-right">{{item.getDate()}}</td>
+      <td class="text-right">
+        <glyph-btn type="warning" glyph="pencil" size="sm" value="Editer" ng-click="goTo(item, true)" ng-if="isOwner(item)"></glyph-btn>
+        <glyph-btn type="danger" glyph="remove" size="sm" value="Supprimer" ng-if="isOwner(item)"></glyph-btn>
       </td>
     </tr>
   </table>
