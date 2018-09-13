@@ -37,7 +37,7 @@ class Ajax {
         $this->rep->update($result ? true : false);
       break;
 
-      case 'new':
+      case "new":
         $result = $this->_create($data);
         if ($result) {
           $data->id = $result;
@@ -50,7 +50,7 @@ class Ajax {
 
       case "save":
         $result = $this->_update($data);
-        if ($result > 0) {
+        if ($result === 1) {
           $this->rep->ok("Sauvegarde réussie");
         } else {
           $this->rep->nok("Sauvegarde échouée");
@@ -59,7 +59,7 @@ class Ajax {
 
       case "delete":
         $result = $this->_delete($data);
-        if ($result > 0) {
+        if ($result === 1) {
           $this->rep->ok("Suppression réussie");
         } else {
           $this->rep->nok("Suppression échouée");
@@ -97,17 +97,15 @@ class Ajax {
         $this->rep->update($wc);
       break;
 
-case "import":
-db_import();
-$this->rep->data = Sql::get_queries();
-$this->rep->ok();
-break;
+      // case "import":
+      // db_import();
+      // $this->rep->data = Sql::get_queries();
+      // $this->rep->ok();
+      // break;
 
       default:
         $this->rep->nok("Aucune action");
-
     }
-
   }
 
 
@@ -166,7 +164,6 @@ break;
     return null;
   }
 
-
   private function send($debug) {
     if ($debug) {
       $this->rep->data = SQL::get_queries();
@@ -180,22 +177,22 @@ break;
 
 }
 
-function db_import() {
-  $res = Sql::query("SELECT * FROM `fiboot_dndsheets`");
-  while ($row = Sql::fetch_assoc($res)) {
-    $data = "{";
-    $data .= '"sheet": "'.str_replace('↵	', '\\n', addslashes(addslashes($row['sheet']))).'"';
-    $data .= "}";
+// function db_import() {
+//   $res = Sql::query("SELECT * FROM `fiboot_dndsheets`");
+//   while ($row = Sql::fetch_assoc($res)) {
+//     $data = "{";
+//     $data .= '"sheet": "'.str_replace('↵	', '\\n', addslashes(addslashes($row['sheet']))).'"';
+//     $data .= "}";
 
-    $name = "name";
-    $id = 2000+intval($row['id']);
-    $type = "dndsheet";
+//     $name = "name";
+//     $id = 2000+intval($row['id']);
+//     $type = "dndsheet";
 
-    $now = date('Y-m-d G:i:s');
-    $query = "INSERT INTO `fiboot_global` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `last_update`, `public`) VALUES ('".$id."', '".$row['account_id']."', '".str_replace("'", "\'", $row[$name])."', '".$data."', '$type', '".$row['date_created']."', '$now', '".$row['public']."')";
-    Sql::query($query);
-  }
-}
+//     $now = date('Y-m-d G:i:s');
+//     $query = "INSERT INTO `fiboot_global` (`id`, `account_id`, `name`, `data`, `type`, `creation_date`, `last_update`, `public`) VALUES ('".$id."', '".$row['account_id']."', '".str_replace("'", "\'", $row[$name])."', '".$data."', '$type', '".$row['date_created']."', '$now', '".$row['public']."')";
+//     Sql::query($query);
+//   }
+// }
 
 new Ajax;
 exit;

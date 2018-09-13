@@ -5,13 +5,20 @@
 
   <!-- DISPLAY FILTER -->
   <form class="form-inline">
-    <select class="form-control" ng-model="F.page" ng-change="calcDisplayList()">
+    <label for="page">Page</label>
+    <select id="page" class="form-control" ng-model="F.page" ng-change="calcDisplayList()">
       <option ng-repeat="page in D.pages" ng-value="page">{{page}}</option>
     </select>
-    <select class="form-control" ng-model="F.count" ng-change="calcPagination()">
+    <label for="result">Résultats</label>
+    <select id="result" class="form-control" ng-model="F.count" ng-change="calcPagination()">
       <option ng-repeat="count in resultCounts" ng-value="count">{{count}}</option>
     </select>
     <span>[{{D.list.length}}]</span>
+
+    <label for="type">Type</label>
+    <select id="type" class="form-control" ng-model="F.type">
+      <option ng-repeat="type in D.types" ng-value="type">{{type}}</option>
+    </select>
   </form>
 
   <div class="vspaced"></div>
@@ -21,7 +28,7 @@
   <table class="table unvisible" ng-class="{'visible': D.loaded}">
     <tr>
       <th>id</th>
-      <th>account_id</th>
+      <th>owner</th>
       <th>name</th>
       <th>data</th>
       <th>type</th>
@@ -30,12 +37,12 @@
       <th>public</th>
       <th>actions</th>
     </tr>
-    <tr ng-repeat="item in D.displayList">
+    <tr ng-repeat="item in D.displayList" ng-show="F.type === allType || item.type === F.type">
       <td>
         <span ng-show="!item.edit">{{item.id}}</span>
       </td>
       <td>
-        <span ng-show="!item.edit">{{item.account_id}}</span>
+        <span ng-show="!item.edit">{{item.owner}}</span>
       </td>
       <td>
         <span ng-show="!item.edit">{{item.name}}</span>
@@ -43,7 +50,7 @@
       </td>
       <td>
         <span ng-show="!item.edit">{{item.data}}</span>
-        <input ng-show="item.edit" type="text" ng-model="E.data" class="form-control" placeholder="data">
+        <textarea ng-show="item.edit" ng-model="E.data" class="form-control" placeholder="data"></textarea>
       </td>
       <td>
         <span ng-show="!item.edit">{{item.type}}</span>
@@ -79,7 +86,7 @@
         <input type="text" ng-model="N.name" class="form-control" placeholder="name">
       </td>
       <td>
-        <input type="text" ng-model="N.data" class="form-control" placeholder="data">
+        <textarea ng-model="N.data" class="form-control" placeholder="data"></textarea>
       </td>
       <td>
         <input type="text" ng-model="N.type" class="form-control" placeholder="type">

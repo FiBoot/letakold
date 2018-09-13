@@ -4,31 +4,37 @@ angular.module('App').controller('adminCtrl', [
   'ajaxService',
   function($scope, $rootScope, ajaxService) {
     $scope.info = new AjaxInfo();
-    $scope.resultCounts = [10, 20, 50, 100, 200];
+    $scope.resultCounts = [1, 10, 20, 50, 100, 200];
+    $scope.allType = '*';
 
     $scope.N = new DataRow();
     $scope.E = new DataRow();
 
     $scope.F = {
       page: 1,
-      count: $scope.resultCounts[0]
+      count: $scope.resultCounts[1],
+      type: $scope.allType
     };
 
     $scope.D = {
       loaded: false,
       list: [],
       displayList: [],
-      pages: [0]
+      pages: [0],
+      types: [$scope.allType]
     };
 
     function loadData() {
-      ajaxService.internalAjax('list', null, null, response => {
-        $scope.D.list = response.data
-          .map(row => {
-            row.edit = false;
-            return row;
-          })
-          .sort((i1, i2) => i1.id - i2.id);
+      ajaxService.internalAjax('list', { order: 'id' }, null, response => {
+        const types = [$scope.allType];
+        $scope.D.list = response.data.map(row => {
+          if (!types.includes(row.type)) {
+            types.push(row.type);
+          }
+          row.edit = false;
+          return row;
+        });
+        $scope.D.types = types;
         $scope.calcPagination();
         $scope.D.loaded = true;
         $rootScope.apply();
@@ -57,6 +63,7 @@ angular.module('App').controller('adminCtrl', [
       const end =
         $scope.F.count > $scope.D.list.length ? $scope.D.list.length - 1 : start + $scope.F.count;
       $scope.D.displayList = $scope.D.list.slice(start, end);
+      console.log(start, end);
     };
 
     $scope.add = function addItem(item) {

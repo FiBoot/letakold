@@ -28,7 +28,7 @@ class QueryParam {
 
   function __construct($key, $comparator = EComparator::EQUAL, $value) {
     $this->key = $key;
-    $this->param = "`$key` $comparator '". addslashes($value) ."'";
+    $this->param = "main.`$key` $comparator '". addslashes($value) ."'";
   }
 
   function or_query($query_param) {
@@ -80,12 +80,22 @@ class Query {
     $this->force = true;
   }
 
-  private function get_inner_fields($table = 'main') {
-    return "$table.id, $table.account_id, $table.name, $table.data, $table.type, $table.creation_date, $table.last_update, $table.public";
+  private function get_table($table_name = "main") {
+    $table = self::TABLE;
+    return "`$table` `$table_name`";
   }
 
-  private function get_inner_join($table = 'main') {
-    return "INNER JOIN `". self::TABLE ."` AS `user` ON $table.account_id = user.id";
+  private function get_inner_fields() {
+    $fields = "user.name as owner";
+    foreach (array("id", "account_id", "name", "data", "type", "creation_date", "last_update", "public") as $field) {
+      $fields .= ", main.$field";
+    }
+    return $fields;
+  }
+
+  private function get_inner_join() {
+    $table = $this->get_table("user");
+    return "LEFT JOIN $table ON main.account_id = user.id";
   }
 
   public function add_param($field, $comparator, $value) {
@@ -120,11 +130,11 @@ class Query {
 
 
   private function get_query_params() {
-    $pq = "";
+    $qp = "";
     foreach ($this->params as $key => $value) {
-      $pq .= ($key > 0 ? " AND " : "") . $value->get();
+      $qp .= ($key > 0 ? " AND " : "") . $value->get();
     }
-    return (count($pq) > 0) ? $pq : "true";
+    return (count($qp) > 0) ? $qp : "true";
   }
 
   private function add_public_param($user) {
@@ -175,9 +185,12 @@ class Query {
 
       case EQueryCommand::SELECT:
         $this->add_public_param($user);
+        $table = $this->get_table();
+        $fields = $this->get_inner_fields();
+        $join = $this->get_inner_join();
         $query_params = $this->get_query_params();
         $where = $query_params ? "WHERE $query_params" : "";
-        $query = rtrim("SELECT * FROM `". self::TABLE ."` $where $this->order $this->limit");
+        $query = rtrim("SELECT $fields FROM $table $join $where $this->order $this->limit");
       break;
 
       case EQueryCommand::INSERT:
@@ -186,8 +199,9 @@ class Query {
           $now = date('Y-m-d G:i:s');
           $item->creation_date = $now;
           $item->last_update = $now;
+          $table = $this->get_table();
           $insert_query = $item->insert_query();
-          $query = "INSERT INTO `". self::TABLE ."` $insert_query";
+          $query = "INSERT INTO $table $insert_query";
         }
       break;
 
@@ -195,9 +209,10 @@ class Query {
         if ($user && $item) {
           $this->add_param('id', EComparator::EQUAL, $item->id);
           $this->add_private_param($user);
+          $table = $this->get_table();
           $query_params = $this->get_query_params();
           $update_query = $item->update_query();
-          $query = "UPDATE `". self::TABLE ."` SET $update_query WHERE $query_params";
+          $query = "UPDATE $table SET $update_query WHERE $query_params";
         }
       break;
 
@@ -205,8 +220,9 @@ class Query {
         if ($user && $item) {
           $this->add_param('id', EComparator::EQUAL, $item->id);
           $this->add_private_param($user);
+          $table = $this->get_table();
           $query_params = $this->get_query_params();
-          $query = "DELETE FROM `". self::TABLE ."` WHERE $query_params";
+          $query = "DELETE FROM $table WHERE $query_params";
         }
       break;
     }

@@ -5,9 +5,10 @@ class DataRow {
     }
     this.id = json.id ? parseInt(json.id) : 0;
     this.account_id = json.account_id ? parseInt(json.account_id) : 0;
-    this.type = json.type ? `${json.type}` : ``;
+    this.owner = json.owner ? `${json.owner}` : ``;
     this.name = json.name ? `${json.name}` : ``;
     this.data = json.data ? `${json.data}` : ``;
+    this.type = json.type ? `${json.type}` : ``;
     this.creation_date = json.creation_date ? new Date(json.creation_date) : new Date();
     this.last_update = json.last_update ? new Date(json.last_update) : new Date();
     this.public = json.public ? json.public : false;

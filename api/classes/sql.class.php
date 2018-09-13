@@ -16,10 +16,6 @@ class SQL {
 		}
 	}
 
-	public static function protect($field) {
-		return "\"". addslashes($field) ."\"";
-	}
-
 	public static function query($req) {
 		$result	= mysql_query("$req;");
 		if (!$result) {
@@ -31,15 +27,8 @@ class SQL {
 	}
 
 	public static function fetch_assoc($res) {
+		// return new Data(mysql_fetch_assoc($res)); // Erreur mémoire ?
 		return mysql_fetch_assoc($res);
-	}
-
-	public static function row_number($res) {
-		return mysql_num_rows($res);
-	}
-
-	public static function affected_row() {
-		return mysql_affected_rows();
 	}
 
 	public static function assoc_tab($res) {
@@ -50,12 +39,21 @@ class SQL {
 		return $tab;
 	}
 
+	public static function row_number($res) {
+		return mysql_num_rows($res);
+	}
+
+	public static function affected_row() {
+		return mysql_affected_rows();
+	}
+
 	public static function last_insert_id() {
 		$arr = self::fetch_assoc(
 			self::query("SELECT LAST_INSERT_ID()")
 		);
 		return $arr["LAST_INSERT_ID()"];
 	}
+
 
 	public static function query_count() {
 		return count(self::$queries);

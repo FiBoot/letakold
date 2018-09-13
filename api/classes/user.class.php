@@ -25,9 +25,9 @@ class USER {
   }
 
   public static function disconnect() {
-    $wc = self::get();
+    $user = self::get();
     session_destroy();
-    return $wc ? true : false;
+    return $user ? true : false;
   }
 
   public static function get() {

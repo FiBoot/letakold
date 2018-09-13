@@ -3,16 +3,16 @@
   <!-- CONTROL -->
   <div class="row bvspaced">
     <div class="col-xs-12">
-      <glyph-btn type="default" glyph="eye-open" value="View" ng-show="S.editmode" on-click="toggleEdit()"></glyph-btn>
-      <glyph-btn type="default" glyph="pencil" value="Edit" ng-show="!S.editmode" on-click="toggleEdit()"></glyph-btn>
+      <glyph-btn type="warning" glyph="pencil" value="Edit" ng-show="!S.editmode" on-click="toggleEdit()"></glyph-btn>
+      <glyph-btn type="info" glyph="eye-open" value="View" ng-show="S.editmode" on-click="toggleEdit()"></glyph-btn>
+      <ajax-btn type="success" info="D.info" glyph="floppy-disk" value="Save story" on-click="saveStory()"></ajax-btn>
     </div>
   </div>
 
   <!-- EDIT list -->
   <div class="vspaced" ng-show="S.editmode">
 
-    <ajax-btn type="success" info="D.info" glyph="floppy-disk" value="Save story" on-click="saveStory()"></ajax-btn>
-    <glyph-btn type="info" glyph="plus" value="Add screen" on-click="addScreen()"></glyph-btn>
+    <glyph-btn type="default" glyph="plus" value="Add screen" on-click="addScreen()"></glyph-btn>
 
     <ul class="screens row vspaced">
       <li class="screen lightbg" ng-repeat="screen in S.list" style="background-image: url({{screen.showbg ? screen.bg : ''}});">
@@ -20,7 +20,7 @@
         <!-- HEADER -->
         <div class="row">
           <div class="col-xs-9">
-            <h4 class="sm-hspaced">Screen {{screen.id}}</h4>
+            <h4 class="sm-hspaced">Screen #{{screen.id}}</h4>
           </div>
           <div class="col-xs-3 text-right">
             <div class="sm-spaced">
@@ -67,7 +67,7 @@
             <div class="input-group">
               <input type="text" ng-model="screen.bg" id="bg{{screen.id}}" resize="false">
               <div class="input-group-btn">
-                <button type="button" class="btn btn-default btn-xs" ng-class="{'btn-info': screen.showbg}" ng-click="screen.showbg = !screen.showbg">
+                <button type="button" class="btn btn-default btn-xs" ng-click="screen.showbg = !screen.showbg">
                   {{screen.showbg ? 'show' : 'hide'}}</button>
               </div>
             </div>
@@ -83,7 +83,7 @@
   <!-- VIEW  -->
   <div class="vspaced" ng-show="!S.editmode">
 
-    <glyph-btn type="info" glyph="repeat" value="Reset" on-click="reset()"></glyph-btn>
+    <glyph-btn type="default" glyph="repeat" value="Reset" on-click="reset()"></glyph-btn>
 
     <div class="vspaced"></div>
 

@@ -4,7 +4,6 @@ angular.module('App').controller('storyCtrl', [
   '$routeParams',
   'ajaxService',
   function($scope, $rootScope, $routeParams, ajaxService) {
-    let gId = 1;
 
     class Choice {
       constructor(text, toId) {
@@ -24,6 +23,7 @@ angular.module('App').controller('storyCtrl', [
     }
 
     $scope.D = {
+      gId: 1,
       info: new AjaxInfo(),
       loaded: false,
       story: null
@@ -36,8 +36,8 @@ angular.module('App').controller('storyCtrl', [
 
     $scope.addScreen = function addScreen() {
       const choice = new Choice('choix', null);
-      gId += 1;
-      $scope.S.list.push(new Screen(gId, `Screen ${gId}`, [choice], ''));
+      $scope.D.gId += 1;
+      $scope.S.list.push(new Screen($scope.D.gId, `Screen ${$scope.D.gId}`, [choice], ''));
       choice.toId = $scope.S.list[0].id;
     };
 
@@ -63,9 +63,7 @@ angular.module('App').controller('storyCtrl', [
 
     $scope.saveStory = function saveStory() {
       const data = angular.toJson($scope.S.list);
-      console.warn(`${data}`);
-      return;
-      $scope.D.story.data = `{"json": ${data}}`;
+      $scope.D.story.data = `${data}`;
       ajaxService.internalAjax(
         $scope.D.story.id ? 'save' : 'new',
         { item: $scope.D.story },
@@ -115,15 +113,16 @@ angular.module('App').controller('storyCtrl', [
       if ($routeParams.hasOwnProperty('id')) {
         loadStory($routeParams.id, story => {
           story.parseData();
-          console.log(story);
           story.data.forEach(screen => {
             let choices = [];
             screen.choices.forEach(choice => choices.push(new Choice(choice.text, choice.toId)));
             $scope.S.list.push(new Screen(screen.id, screen.text, choices, screen.bg));
+            $scope.D.gId = screen.id > $scope.D.gId ? screen.id : $scope.D.gId;
           });
           $scope.reset();
           $scope.D.story = story;
           $scope.D.loaded = true;
+          $rootScope.apply();
         });
       }
     }
