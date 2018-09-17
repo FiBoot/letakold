@@ -111,7 +111,7 @@ angular.module('App').controller('storyCtrl', [
       $rootScope.apply();
     }
 
-    function loadStory(id, cb) {
+    function loadData(id, cb) {
       ajaxService.internalAjax('get', { type: 'story', id: id }, $scope.D.info, response => {
         if (response.status) {
           cb(response.data);
@@ -128,7 +128,7 @@ angular.module('App').controller('storyCtrl', [
         type: 'story'
       });
       if ($routeParams.hasOwnProperty('id')) {
-        loadStory($routeParams.id, parseData);
+        loadData($routeParams.id, parseData);
       }
     }
     init();

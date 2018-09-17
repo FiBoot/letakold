@@ -1,0 +1,21 @@
+<div class="container spaced">
+
+  <div class="vspaced">
+    <back-btn type="image" no-list="true"></back-btn>
+  </div>
+
+  <ajax-msg info="D.info"></ajax-msg>
+
+  <div ng-show="D.loaded">
+    <h3>{{D.image.name}}</h3>
+    <img ng-src="../images/{{D.image.data.filename}}.{{D.image.data.extention}}">
+
+    <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="image in D.list.slice(0, 12)">
+      <div class="thumbnail marged" ng-click="goTo(image)">
+        <img ng-src="../images/thumbnails/{{image.data.filename}}.jpeg">
+      </div>
+    </div>
+
+  </div>
+
+</div>

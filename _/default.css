@@ -36,6 +36,7 @@ html, body {
 }
 
 /* SPACE */
+.marged       { margin: 8px; }
 .spaced	      { padding: 8px !important; }
 .lg-spaced	  { padding: 15px !important; }
 .sm-spaced	  { padding: 5px !important; }
@@ -71,6 +72,9 @@ input[type=checkbox].form-control {
   height: 16px;
 }
 /* NAV BRAND */
-.navbar .navbar-brand   { line-height: 25px;}
+.navbar .navbar-brand { line-height: 25px;}
 /* ALERT */
-.alert  { margin: 0 !important; }
+.alert                { margin: 0 !important; }
+/* THUMBNAIL */
+.thumbnail            { cursor: pointer; }
+.thumbnail:hover      { border-color: #666; }

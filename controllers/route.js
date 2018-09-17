@@ -35,6 +35,16 @@ angular.module('App', ['ngRoute']).config(function($routeProvider, $locationProv
       templateUrl: 'views/story/story.view.html'
     })
 
+    // image
+    .when('/image', {
+      controller: 'imageCtrl',
+      templateUrl: 'views/image/image.view.html'
+    })
+    .when('/image/:id', {
+      controller: 'imageCtrl',
+      templateUrl: 'views/image/image.view.html'
+    })
+
     //timeline
     .when('/timeline', {
       controller: 'timelineCtrl',

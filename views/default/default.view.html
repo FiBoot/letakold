@@ -2,11 +2,17 @@
 
   <ajax-msg info="D.info"></ajax-msg>
 
-  <div class="card" ng-repeat="item in D.list" ng-click="goTo(item)" style="border:1px solid grey">
-    <div>{{item.name}}</div>
-    <div>{{item.username}}</div>
-    <div>{{item.type}}</div>
-    <div>{{item.last_update}}</div>
+  <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="item in D.list" ng-click="goTo(item)">
+    <div class="thumbnail marged">
+      <div class="row">
+        <div class="col-xs-8">{{item.name}}</div>
+        <div class="col-xs-4 text-right">{{item.owner}}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4">{{item.type}}</div>
+        <div class="col-xs-8 text-right">{{item.getDate()}}</div>
+      </div>
+    </div>
   </div>
 
 </div>

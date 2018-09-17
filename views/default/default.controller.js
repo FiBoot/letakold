@@ -22,8 +22,8 @@ angular.module('App').controller('defaultCtrl', [
     }
 
     $scope.goTo = function goTo(item) {
-      console.log(`list/${item.type}`);
-      $location.path(`list/${item.type}`);
+      const link = `${item.type}/${item.id}`;
+      $location.path(link);
     };
 
     $scope.$on('connected', loadData);
