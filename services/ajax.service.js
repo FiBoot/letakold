@@ -43,12 +43,19 @@ function ajaxService($rootScope) {
     },
 
     internalAjax: function internalAjax(action, data, info, successCallback, errorCallback) {
-      if (!info) {
-        info = new AjaxInfo();
-      }
-      info.update(true, `Requête ${action} en cours...`);
+      const type = data && data.hasOwnProperty('type') ? `/${data.type}` : '';
+      info = info ? info : new AjaxInfo();
+
+      info.update(true, `Requête ${action}${type} en cours...`, true);
       $rootScope.apply();
-      this.ajax('api/ajax.php', 'POST', { action: action, data: data }, info, successCallback, errorCallback);
+      this.ajax(
+        'api/ajax.php',
+        'POST',
+        { action: action, data: data },
+        info,
+        successCallback,
+        errorCallback
+      );
       return info;
     }
   };

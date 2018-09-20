@@ -20,7 +20,7 @@ class Response {
     $this->elapsed_time = 0;
   }
 
-  function update($status, $message = null) {
+  function update($status, $message) {
     $this->status = $status ? true : false;
     $this->message = $message;
   }

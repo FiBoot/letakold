@@ -1,21 +1,86 @@
-<div class="container spaced">
-
-  <div class="vspaced">
-    <back-btn type="image" no-list="true"></back-btn>
-  </div>
+<div class="container spaced" id="image_view">
 
   <ajax-msg info="D.info"></ajax-msg>
 
-  <div ng-show="D.loaded">
-    <h3>{{D.image.name}}</h3>
-    <img ng-src="../images/{{D.image.data.filename}}.{{D.image.data.extention}}">
+  <div class="vspaced">
+    <glyph-btn type="success" glyph="save" value="Envoyer image" on-click="openModal()"></glyph-btn>
+  </div>
 
-    <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="image in D.list.slice(0, 12)">
-      <div class="thumbnail marged" ng-click="goTo(image)">
-        <img ng-src="../images/thumbnails/{{image.data.filename}}.jpeg">
+  <div ng-show="D.loaded">
+
+    <!-- IMAGE -->
+    <div ng-show="I.selected">
+      <div class="vspaced">
+        <glyph-btn glyph="chevron-left" value="Retour" on-click="back()"></glyph-btn>
+        <glyph-btn type="info" glyph="new-window" value="Partager" on-click="copy(I.selected)"></glyph-btn>
       </div>
+      <h2>{{I.selected.name}}</h2>
+      {{image.id}}
+      <!-- <img ng-src="{{I.path}}/{{I.selected.data.filename}}.{{I.selected.data.extention}}" ng-alt="I.selected.name"> -->
+    </div>
+
+    <!-- LIST -->
+    <div ng-show="!I.selected">
+      <pagination current="I.page" total="I.pageCount" on-change="setPage(page)"></pagination>
+      <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="image in I.displayed">
+        <div class="thumbnail marged" ng-click="select(image)">
+          {{image.id}}
+          <!-- <img ng-src="../images/thumbnails/{{image.data.filename}}.jpeg"> -->
+        </div>
+      </div>
+      <pagination current="I.page" total="I.pageCount" on-change="setPage(page)"></pagination>
     </div>
 
   </div>
+
+  <!-- IMAGE MODAL -->
+  <div class="modal fade" id="image_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Enoyer image</h4>
+        </div>
+        <form class="form-horizontal" ng-submit="upload()">
+
+          <div class="modal-body text-center">
+            <div class="form-group has-feedback">
+              <label class="control-label col-sm-3" for="imageMessage">Nom</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="imageMessage" ng-model="U.name">
+              </div>
+            </div>
+
+            <div class="form-group has-feedback" id="imageFileGroup">
+              <label class="control-label col-sm-3" for="hiddenFileInput">Chemin</label>
+              <div class="col-sm-9">
+                <div class="input-group">
+                  <span class="input-group-addon">Fichier</span>
+                  <input type="text" class="form-control" ng-click="selectImageFile()" ng-model="U.filepath" readonly>
+                </div>
+              </div>
+              <input type="file" class="hidden" id="hiddenFileInput" onchange="angular.element(this).scope().setFilePath(this)">
+            </div>
+
+            <div class="progress" ng-show="U.info.pending">
+              <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="{{U.progress.completed}}"
+                aria-valuemin="0" aria-valuemax="100" ng-style="U.progress.completedStyle">
+                <span class="sr-only">{{U.progress.completed}}%</span>
+              </div>
+            </div>
+
+            <ajax-msg info="U.info"></ajax-msg>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" ng-click="upload()">Send</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
 
 </div>

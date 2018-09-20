@@ -1,0 +1,27 @@
+<div class="text-center">
+
+  <ul class="pagination">
+    <li ng-class="{'disabled': $ctrl.current === 1}">
+      <a href label="Début" ng-click="$ctrl.click(1)">
+        <span>&laquo;</span>
+      </a>
+    </li>
+    <li ng-class="{'disabled': $ctrl.current === 1}">
+        <a href label="Précedent" ng-click="$ctrl.click($ctrl.current - 1)">
+          <span>Prev</span>
+        </a>
+    </li>
+    <li><a label="Actuel">{{$ctrl.current}}</a></li>
+    <li ng-class="{'disabled': $ctrl.current === $ctrl.total}">
+        <a href label="Suivant" ng-click="$ctrl.click($ctrl.current + 1)">
+          <span>Next</span>
+        </a>
+    </li>
+    <li ng-class="{'disabled': $ctrl.current === $ctrl.total}">
+        <a href label="Fin" ng-click="$ctrl.click($ctrl.total)">
+          <span>&raquo;</span>
+        </a>
+    </li>
+  </ul>
+
+</div>
