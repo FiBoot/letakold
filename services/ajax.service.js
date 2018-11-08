@@ -1,19 +1,22 @@
-function buildDataRow(response) {
-  if (response.data) {
-    if (response.data instanceof Array) {
-      const arr = [];
-      response.data.forEach(row => {
-        arr.push(new DataRow(row));
-      });
-      response.data = arr;
-    } else {
-      response.data = new DataRow(response.data);
-    }
-  }
-  return response;
-}
+
 
 function ajaxService($rootScope) {
+  
+  function buildDataRow(response) {
+    if (response.data) {
+      if (response.data instanceof Array) {
+        const arr = [];
+        response.data.forEach(row => {
+          arr.push(new DataRow(row));
+        });
+        response.data = arr;
+      } else {
+        response.data = new DataRow(response.data);
+      }
+    }
+    return response;
+  }
+
   return {
     ajax: function ajax(url, method, data, info, successCallback, errorCallback) {
       const jqxhr = $.ajax({
@@ -39,7 +42,7 @@ function ajaxService($rootScope) {
           errorCallback(textStatus);
         }
       });
-      jqxhr.always((jqXHR, textStatus, errorThrown) => {});
+      jqxhr.always((jqXHR, textStatus, errorThrown) => { });
     },
 
     internalAjax: function internalAjax(action, data, info, successCallback, errorCallback) {
