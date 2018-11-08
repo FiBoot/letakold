@@ -1,16 +1,19 @@
-<div class="container spaced">
+<div class="container">
 
-  <ajax-msg info="D.info"></ajax-msg>
+  <ajax-msg class="m-2" info="D.info"></ajax-msg>
 
-  <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="item in D.list" ng-click="goTo(item)">
-    <div class="thumbnail marged">
-      <div class="row">
-        <div class="col-xs-8">{{item.name}}</div>
-        <div class="col-xs-4 text-right">{{item.owner}}</div>
-      </div>
-      <div class="row">
-        <div class="col-xs-4">{{item.type}}</div>
-        <div class="col-xs-8 text-right">{{item.getDate()}}</div>
+  <div class="card-deck row">
+    <div class="card-wrapper col-12 col-md-6 col-lg-4" ng-repeat="item in D.list">
+      <div class="card" ng-click="goTo(item)">
+        <!-- TODO: img by type -->
+        <!-- <img class="card-img-top" src="/src/assets/appcardimage.svg" alt="App card image"> -->
+        <div class="card-body">
+          <h5 class="card-title">{{item.type}}</h5>
+          <p class="card-text">{{item.name}}</p>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">{{item.owner}} - {{item.getDate()}}</small>
+        </div>
       </div>
     </div>
   </div>

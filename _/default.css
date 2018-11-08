@@ -35,21 +35,7 @@ html, body {
   min-height: 0;
 }
 
-/* SPACE */
-.marged       { margin: 8px; }
-.spaced	      { padding: 8px !important; }
-.lg-spaced	  { padding: 15px !important; }
-.sm-spaced	  { padding: 5px !important; }
-.xs-spaced	  { padding: 2px !important; }
-.hspaced	    { padding: 0 8px !important; }
-.lg-hspaced	  { padding: 0 15px !important; }
-.sm-hspaced	  { padding: 0 5px !important; }
-.xs-hspaced	  { padding: 0 2px !important; }
-.vspaced	    { padding: 8px 0 !important; }
-.lg-vspaced	  { padding: 15px 0 !important; }
-.sm-vspaced	  { padding: 5px 0 !important; }
-.xs-vspaced	  { padding: 2px 0 !important; }
-/* F-COLOR */
+/* FONT-COLOR */
 .dark	        { color: #111; }
 .darkgrey	    { color: #333; }
 .grey	        { color: #666; }
@@ -75,6 +61,7 @@ input[type=checkbox].form-control {
 .navbar .navbar-brand { line-height: 25px;}
 /* ALERT */
 .alert                { margin: 0 !important; }
-/* THUMBNAIL */
-.thumbnail            { cursor: pointer; }
-.thumbnail:hover      { border-color: #666; }
+/* CARD */
+.card-wrapper         { margin-bottom: 15px; }
+.card                 { cursor: pointer; }
+.card:hover           { box-shadow: 0 0 15px -5px #333; }

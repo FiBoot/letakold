@@ -3,7 +3,7 @@ angular.module('App').controller('defaultCtrl', [
   '$rootScope',
   '$location',
   'ajaxService',
-  function($scope, $rootScope, $location, ajaxService) {
+  function ($scope, $rootScope, $location, ajaxService) {
     $scope.D = {
       info: new AjaxInfo(),
       loaded: false,

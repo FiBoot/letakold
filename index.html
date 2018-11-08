@@ -16,10 +16,12 @@
 
 <body ng-controller="mainCtrl">
 
+	<!-- !LOADED -->
 	<div ng-show="!Loaded">
 		<h4 class="spaced centered darkgrey">Loading Letakol.FiBoot ..</h4>
 	</div>
 
+	<!-- LOADED -->
 	<div class="unvisible" ng-class="{'visible': Loaded}">
 
 		<nav class="navbar navbar-inverse navbar-fixed-top">
@@ -57,6 +59,7 @@
 			</div>
 		</nav>
 
+		<!-- NG-VIEW -->
 		<div class="page" ng-view></div>
 
 	</div>
