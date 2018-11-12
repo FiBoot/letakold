@@ -32,14 +32,14 @@
 
 |Emoji|Meaning|
 |:-|:-|
-|🎉 :tada:|Initalisation|
-|✨ :sparkles:|New feature|
-|📚 :books:|Documentation|
-|🎨 :art:|Styling|
-|🔨 :hammer:|Refactoring|
-|🚧 :construction:|Work in progress|
-|🔧 :wrench:|Configuration|
-|👌 :ok_hand:|Validation (Merge)|
-|🔛 :on:|Api|
-|🐛 :bug:|Bugfix|
-|🔒 :lock:|Security|
+|:tada:|Initalisation|
+|:sparkles:|New feature|
+|:books:|Documentation|
+|:art:|Styling|
+|:hammer:|Refactoring|
+|:construction:|Work in progress|
+|:wrench:|Configuration|
+|:ok_hand:|Validation (Merge)|
+|:on:|Api|
+|:bug:|Bugfix|
+|:lock:|Security|
